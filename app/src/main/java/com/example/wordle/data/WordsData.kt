@@ -1,12 +1,7 @@
 package com.example.wordle.data
 
 
-val stringKeyboard: Set<String> =
-    setOf(
-       "qwertyuiop",
-        "asdfghjkl",
-        "zxcvbnm"
-    )
+
 
 val allWordsFourLatter: Set<String> =
     setOf(
