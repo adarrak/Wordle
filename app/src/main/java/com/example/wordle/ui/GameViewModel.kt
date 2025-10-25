@@ -11,20 +11,16 @@ val stringKeyboard: Set<String> =
     setOf(
         "QWERTYUIOP",
         "ASDFGHJKL",
-        "ZXCVBNM"
+        "ZXCVBNM*"
     )
 
 class GameViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
+    // список подсказок
+    private lateinit var _hintWord: MutableList<Char>
 
-
-
-
-    private fun updateGameState() {
-
-    }
 
     fun deactivateRow(numberOfRow: Int): Boolean {
         return uiState.value.currentRow == numberOfRow
@@ -39,6 +35,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun writeSymbol(symbol: String) {
+        //добавить чтобы не перескакивало на первый квадрат при вводе последнего
         _uiState.update { it ->
             val tempList = it.currentAnswer
             tempList[it.currentColumn] = symbol
@@ -53,46 +50,84 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    fun checkButton() {
-        if (!uiState.value.currentAnswer.contains(" ")) {
-            _uiState.update { it ->
-                val tempList = it.userGuess
-                tempList[it.currentRow] = it.currentAnswer.joinToString(separator = "")
+    fun clearSymbol() {
+
+        _uiState.update { it ->
+            val column = it.currentColumn
+            val answer = it.currentAnswer.toMutableList()
+
+            if (answer[column] != " ") {
+                answer[column] = " "
                 it.copy(
-                    currentRow = it.currentRow + 1,
-                    currentAnswer = MutableList(uiState.value.currentWord.length) { " " },
-                    currentColumn = 0,
-                    userGuess = tempList
+                    currentAnswer = answer,
+                    currentColumn = if (column != 0) column - 1 else 0
                 )
+            } else {
+                if (column != 0) {
+                    answer[column - 1] = " "
+                    it.copy(
+                        currentAnswer = answer,
+                        currentColumn = column - 1
+                    )
+                } else {
+                    it
+                }
+
 
             }
-        } else {
 
-            //добавить функционал того что не полная строка для ответа
-            val i = 0
+
+        }
+    }
+
+    fun checkButton() {
+        if (uiState.value.currentAnswer.joinToString("") != uiState.value.currentWord) {
+            if (!uiState.value.currentAnswer.contains(" ")) {
+                _uiState.update { it ->
+                    val tempList = it.userGuess
+                    tempList[it.currentRow] = it.currentAnswer.joinToString(separator = "")
+                    it.copy(
+                        currentRow = it.currentRow + 1,
+                        currentAnswer = MutableList(uiState.value.currentWord.length) { " " },
+                        currentColumn = 0,
+                        userGuess = tempList
+                    )
+
+                }
+            } else {
+                //добавить функционал того что не полная строка для ответа
+                val i = 0
+            }
+
+        } else {
+            _uiState.update { it ->
+                it.copy(isGameOver = true)
+            }
         }
     }
 
 
     fun checkAnswer(row: Int, column: Int): Color {
+        val currentAnswerChar: Char = uiState.value.userGuess[row][column]
+        _hintWord = uiState.value.currentWord.toMutableList()
 
-        if (uiState.value.userGuess[row][column] == uiState.value.currentWord[column]) {
-            val tempHintList = uiState.value.hintWord
-            val tempHintWord = tempHintList[row].toMutableList()
-            tempHintWord[column] = '*'
-            tempHintWord.joinToString { "" }
-            // разобраться с присвоением строки. работает не правильно
-            _uiState.update { it ->
-                it.copy(hintWord = tempHintList)
+        for (i in 0 until _hintWord.size) {
+            if (_hintWord[i] == uiState.value.userGuess[row][i]) {
+                _hintWord[i] = '*'
             }
-            return Color.Green
-        } else {
-            //return if (uiState.value.currentAnswer[column] in _hintWord[row])
-               return Color.Yellow
-            //else Color.DarkGray
+        }
+
+        return if (_hintWord[column] == '*') Color.Green
+        else {
+            if (currentAnswerChar in _hintWord) Color.Yellow
+            else Color.DarkGray
         }
     }
 
 
+    fun gameOver() {}
+
+
 }
+
 

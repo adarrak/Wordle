@@ -6,24 +6,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,38 +40,42 @@ import com.example.wordle.ui.theme.WordleTheme
 
 @Composable
 fun GameScreen(
-) {
+    gameViewModel: GameViewModel = viewModel(),
+
+    ) {
+    val gameUiState by gameViewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     Column(
         modifier = Modifier
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .safeDrawingPadding()
+            .fillMaxSize()
             .padding(mediumPadding),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(R.string.app_name).uppercase()
+            text = stringResource(R.string.app_name).uppercase(),
+            fontSize = 48.sp
         )
-        Text(
-            text = "5 Letter"
-        )
-        GameLayout()
-        Spacer(Modifier.size(50.dp))
-        Keyboard()
+
+        GameLayout(gameViewModel)
+
+        Keyboard(gameViewModel)
+
+    }
+    if (gameUiState.isGameOver) {
+        Success()
     }
 }
 
 @Composable
 fun GameLayout(
-    gameViewModel: GameViewModel = viewModel(),
+    gameViewModel: GameViewModel,
 ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
     val smallPadding = dimensionResource(R.dimen.padding_small)
-
-    var text by remember { mutableStateOf("") }
-
     Column(
         verticalArrangement = Arrangement.spacedBy(smallPadding)
     ) {
@@ -86,6 +90,32 @@ fun GameLayout(
                         modifier = Modifier
                             .weight(weight = 1f)
                             .aspectRatio(1f)
+                            .clip(
+                                shape = when (Pair(numberOfRow, numberOfColumn)) {
+                                    Pair(
+                                        0,
+                                        0
+                                    ) -> RoundedCornerShape(topStart = dimensionResource(R.dimen.padding_medium))
+
+                                    Pair(
+                                        0,
+                                        gameUiState.currentWord.length - 1
+                                    ) -> RoundedCornerShape(topEnd = dimensionResource(R.dimen.padding_medium))
+
+                                    Pair(
+                                        gameUiState.numberOfAttempts - 1,
+                                        0
+                                    ) -> RoundedCornerShape(bottomStart = dimensionResource(R.dimen.padding_medium))
+
+                                    Pair(
+                                        gameUiState.numberOfAttempts - 1,
+                                        gameUiState.currentWord.length - 1
+                                    ) -> RoundedCornerShape(bottomEnd = dimensionResource(R.dimen.padding_medium))
+
+                                    else -> RoundedCornerShape(size = 0.dp)
+                                }
+
+                            )
                             .clickable(
                                 enabled = gameViewModel.deactivateRow(numberOfRow),
                                 onClick = {
@@ -111,8 +141,6 @@ fun GameLayout(
                                     }
                             )
                             .padding(dimensionResource(R.dimen.padding_small)),
-
-
                         contentAlignment = Alignment.Center
                     )
                     {
@@ -133,11 +161,28 @@ fun GameLayout(
             }
         }
     }
+
 }
 
 @Composable
+fun Success() {
+    Box(
+        modifier = Modifier
+            .padding(dimensionResource(R.dimen.padding_small))
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "KOOL",
+            fontSize = 48.sp
+        )
+    }
+}
+
+
+@Composable
 fun Keyboard(
-    gameViewModel: GameViewModel = viewModel(),
+    gameViewModel: GameViewModel,
 ) {
     Column(
         modifier = Modifier
@@ -145,27 +190,29 @@ fun Keyboard(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_small))
     ) {
         for (item in stringKeyboard) {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_small))
             ) {
+
                 item.forEach { it ->
+
                     Box(
                         modifier = Modifier
-                            .weight(1f)
-                            .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-                            .background(color = MaterialTheme.colorScheme.primary)
-                            .clickable {
-                                gameViewModel.writeSymbol(it.toString())
-                            }
-                            .padding(dimensionResource(R.dimen.padding_small)),
+                            .weight(if (it != '*') 1f else 2f),
                         contentAlignment = Alignment.Center
                     )
                     {
-                        Text(
+
+                        KeyboardButton(
                             text = it.toString(),
-                            fontSize = 24.sp
+                            onClick = if (it != '*') {
+                                { gameViewModel.writeSymbol(it.toString()) }
+                            } else {
+                                {gameViewModel.clearSymbol()}
+                            }
                         )
                     }
                 }
@@ -173,25 +220,53 @@ fun Keyboard(
         }
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-                .background(color = MaterialTheme.colorScheme.primary)
-                .clickable {
-                    gameViewModel.checkButton()
-                }
-                .padding(dimensionResource(R.dimen.padding_small)),
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
         )
         {
-            Text(
+            KeyboardButton(
+                onClick = { gameViewModel.checkButton() },
                 text = "CHECK"
             )
+
+        }
+    }
+}
+
+@Composable
+fun KeyboardButton(
+    onClick: () -> Unit,
+    text: String
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
+            .background(color = MaterialTheme.colorScheme.primary)
+            .clickable(
+                onClick = onClick
+            )
+            .padding(dimensionResource(R.dimen.padding_small)),
+        contentAlignment = Alignment.Center
+    )
+    {
+        if (text != "*") {
+            Text(
+                text = text,
+                fontSize = 24.sp
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.Backspace,
+                contentDescription = "Clear",
+            )
+
         }
     }
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 427, heightDp = 952)
 @Composable
 fun GameScreenPreview() {
     WordleTheme {

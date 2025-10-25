@@ -4,6 +4,8 @@ data class GameUiState(
 
     val currentWord: String = "APPLE",
 
+    //угадал ли слово?
+    val isGameOver: Boolean = false,
 
     // активные строка и столбец
     val currentRow: Int = 0,
@@ -20,6 +22,5 @@ data class GameUiState(
     val userGuess: MutableList<String> = MutableList(numberOfAttempts) { "" },
 
 
-    // список подсказок
-    val hintWord: MutableList<String> = MutableList(numberOfAttempts) { currentWord },
+
 )
