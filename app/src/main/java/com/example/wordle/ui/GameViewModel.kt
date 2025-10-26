@@ -21,7 +21,6 @@ class GameViewModel : ViewModel() {
     // список подсказок
     private lateinit var _hintWord: MutableList<Char>
 
-
     fun deactivateRow(numberOfRow: Int): Boolean {
         return uiState.value.currentRow == numberOfRow
     }
@@ -35,14 +34,13 @@ class GameViewModel : ViewModel() {
     }
 
     fun writeSymbol(symbol: String) {
-        //добавить чтобы не перескакивало на первый квадрат при вводе последнего
         _uiState.update { it ->
-            val tempList = it.currentAnswer
+            val tempList = it.currentAnswer.toMutableList()
             tempList[it.currentColumn] = symbol
             it.copy(
                 currentAnswer = tempList,
                 currentColumn = if (it.currentColumn == it.currentWord.length - 1) {
-                    0
+                    it.currentColumn
                 } else {
                     it.currentColumn + 1
                 }
@@ -51,11 +49,9 @@ class GameViewModel : ViewModel() {
     }
 
     fun clearSymbol() {
-
         _uiState.update { it ->
             val column = it.currentColumn
             val answer = it.currentAnswer.toMutableList()
-
             if (answer[column] != " ") {
                 answer[column] = " "
                 it.copy(
@@ -69,14 +65,8 @@ class GameViewModel : ViewModel() {
                         currentAnswer = answer,
                         currentColumn = column - 1
                     )
-                } else {
-                    it
-                }
-
-
+                } else it
             }
-
-
         }
     }
 
@@ -92,20 +82,17 @@ class GameViewModel : ViewModel() {
                         currentColumn = 0,
                         userGuess = tempList
                     )
-
                 }
             } else {
                 //добавить функционал того что не полная строка для ответа
                 val i = 0
             }
-
         } else {
             _uiState.update { it ->
                 it.copy(isGameOver = true)
             }
         }
     }
-
 
     fun checkAnswer(row: Int, column: Int): Color {
         val currentAnswerChar: Char = uiState.value.userGuess[row][column]
@@ -116,18 +103,12 @@ class GameViewModel : ViewModel() {
                 _hintWord[i] = '*'
             }
         }
-
         return if (_hintWord[column] == '*') Color.Green
         else {
             if (currentAnswerChar in _hintWord) Color.Yellow
             else Color.DarkGray
         }
     }
-
-
-    fun gameOver() {}
-
-
 }
 
 
