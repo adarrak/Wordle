@@ -7,6 +7,9 @@ data class GameUiState(
     //угадал ли слово?
     val isGameOver: Boolean = false,
 
+    //правильный ответ?
+    val answerIsCorrect: Boolean = false,
+
     // активные строка и столбец
     val currentRow: Int = 0,
     val currentColumn: Int = 0,

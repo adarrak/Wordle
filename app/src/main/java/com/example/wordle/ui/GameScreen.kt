@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -64,8 +65,8 @@ fun GameScreen(
         Keyboard(gameViewModel)
 
     }
-    if (gameUiState.isGameOver) {
-        Success()
+    if (gameUiState.answerIsCorrect) {
+        Success(gameViewModel)
     }
 }
 
@@ -122,22 +123,10 @@ fun GameLayout(
                                 }
                             )
                             .background(
-                                color =
-                                    if (gameUiState.currentRow <= numberOfRow) {
-                                        if (
-                                            numberOfColumn == gameUiState.currentColumn
-                                            && numberOfRow == gameUiState.currentRow
-                                        ) {
-                                            Color.Gray
-                                        } else {
-                                            Color.DarkGray
-                                        }
-                                    } else {
-                                        gameViewModel.checkAnswer(
-                                            row = numberOfRow,
-                                            column = numberOfColumn
-                                        )
-                                    }
+                                color = gameViewModel.checkColorSquare(
+                                    row = numberOfRow,
+                                    column = numberOfColumn
+                                )
                             )
                             .padding(dimensionResource(R.dimen.padding_small)),
                         contentAlignment = Alignment.Center
@@ -164,17 +153,54 @@ fun GameLayout(
 }
 
 @Composable
-fun Success() {
+fun Success(
+    gameViewModel: GameViewModel,
+) {
+    val gameUiState by gameViewModel.uiState.collectAsState()
     Box(
         modifier = Modifier
             .padding(dimensionResource(R.dimen.padding_small))
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(Color.Transparent)
+
+            .clickable(onClick = { }, enabled = false),
+
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "KOOL",
-            fontSize = 48.sp
-        )
+        Box(
+            modifier = Modifier
+                .padding(dimensionResource(R.dimen.padding_small))
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)))
+                .background(Color.Red)
+                .aspectRatio(ratio = 1f),
+            contentAlignment = Alignment.Center
+        ) {
+            val text = if (gameUiState.answerIsCorrect) "YOU WIN" else "TRY AGAIN"
+            Text(
+                text = text,
+                fontSize = 48.sp
+            )
+            Row (
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(dimensionResource(R.dimen.padding_medium))
+                    .fillMaxWidth()
+                    .background(Color.Magenta)
+                    .width(20.dp),
+
+            ) {
+                GameOverButton()
+                GameOverButton()
+            }
+        }
+    }
+}
+
+@Composable
+fun GameOverButton() {
+    Box(modifier = Modifier.fillMaxWidth()){
+        Text(text = "TRY AGAIN")
     }
 }
 
@@ -210,7 +236,7 @@ fun Keyboard(
                             onClick = if (it != '*') {
                                 { gameViewModel.writeSymbol(it.toString()) }
                             } else {
-                                {gameViewModel.clearSymbol()}
+                                { gameViewModel.clearSymbol() }
                             }
                         )
                     }
@@ -269,6 +295,7 @@ fun KeyboardButton(
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        GameScreen()
+        Success(viewModel())
+        //GameScreen()
     }
 }
