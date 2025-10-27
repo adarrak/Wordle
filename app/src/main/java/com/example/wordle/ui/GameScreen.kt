@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -159,47 +158,29 @@ fun Success(
     val gameUiState by gameViewModel.uiState.collectAsState()
     Box(
         modifier = Modifier
-            .padding(dimensionResource(R.dimen.padding_small))
             .fillMaxSize()
             .background(Color.Transparent)
-
             .clickable(onClick = { }, enabled = false),
-
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(dimensionResource(R.dimen.padding_small))
-                .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)))
-                .background(Color.Red)
-                .aspectRatio(ratio = 1f),
+                .aspectRatio(ratio = 1f)
+                .background(Color.Red),
             contentAlignment = Alignment.Center
         ) {
-            val text = if (gameUiState.answerIsCorrect) "YOU WIN" else "TRY AGAIN"
-            Text(
-                text = text,
-                fontSize = 48.sp
-            )
-            Row (
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(dimensionResource(R.dimen.padding_medium))
-                    .fillMaxWidth()
-                    .background(Color.Magenta)
-                    .width(20.dp),
-
-            ) {
-                GameOverButton()
-                GameOverButton()
-            }
+            Text(text = if (gameUiState.answerIsCorrect)"" else " 1",
+                fontSize = 48.sp)
         }
     }
 }
 
 @Composable
 fun GameOverButton() {
-    Box(modifier = Modifier.fillMaxWidth()){
+    Box(modifier = Modifier.fillMaxWidth()) {
         Text(text = "TRY AGAIN")
     }
 }
@@ -295,7 +276,10 @@ fun KeyboardButton(
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        Success(viewModel())
-        //GameScreen()
+        GameScreen()
+        Success(
+            viewModel()
+        )
+
     }
 }
