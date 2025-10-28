@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -64,9 +63,9 @@ fun GameScreen(
         Keyboard(gameViewModel)
 
     }
-    //if (gameUiState.answerIsCorrect) {
-      //  Success(gameViewModel)
-    //}
+    if (gameUiState.isGameOver || gameUiState.isGameWin) {
+     Success(gameViewModel)
+    }
 }
 
 @Composable
@@ -132,8 +131,8 @@ fun GameLayout(
                     )
                     {
                         Text(
-                            text = gameViewModel.visibleChar(numberOfRow,numberOfColumn),
-                            fontSize = 32.sp
+                            text = gameViewModel.visibleChar(numberOfRow, numberOfColumn),
+                            fontSize = 32.sp,
                         )
                     }
                 }
@@ -161,11 +160,13 @@ fun Success(
                 .padding(dimensionResource(R.dimen.padding_small))
                 .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)))
                 .aspectRatio(ratio = 1f)
-                .background(Color.Red),
+                .background(Color.Transparent),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = if (1==1)"" else " 1",
-                fontSize = 48.sp)
+            Text(
+                text = if (1 == 1) "" else " 1",
+                fontSize = 48.sp
+            )
         }
     }
 }
@@ -210,7 +211,8 @@ fun Keyboard(
                                 { gameViewModel.writeSymbol(it) }
                             } else {
                                 { gameViewModel.clearSymbol() }
-                            }
+                            },
+                            gameViewModel = viewModel()
                         )
                     }
                 }
@@ -224,7 +226,8 @@ fun Keyboard(
         {
             KeyboardButton(
                 onClick = { gameViewModel.checkButton() },
-                text = "CHECK"
+                text = "CHECK",
+                gameViewModel = viewModel()
             )
 
         }
@@ -234,13 +237,15 @@ fun Keyboard(
 @Composable
 fun KeyboardButton(
     onClick: () -> Unit,
-    text: String
+    text: String,
+    gameViewModel: GameViewModel,
 ) {
+    val color = gameViewModel.colorKeyboard(text)
     Box(
         modifier = Modifier
             .fillMaxSize()
             .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-            .background(color = MaterialTheme.colorScheme.primary)
+            .background(color)
             .clickable(
                 onClick = onClick
             )
@@ -268,10 +273,10 @@ fun KeyboardButton(
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        GameScreen()
-        //Success(
-          //  viewModel()
-        //)
+        //GameScreen()
+        Success(
+          viewModel()
+        )
 
     }
 }

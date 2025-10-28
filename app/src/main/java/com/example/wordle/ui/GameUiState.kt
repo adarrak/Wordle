@@ -6,6 +6,8 @@ data class GameUiState(
 
     val currentWord: String = "APPLE",
 
+
+
     //не угадал слово и закончились попытки
     val isGameOver: Boolean = false,
 
