@@ -64,9 +64,9 @@ fun GameScreen(
         Keyboard(gameViewModel)
 
     }
-    if (gameUiState.answerIsCorrect) {
-        Success(gameViewModel)
-    }
+    //if (gameUiState.answerIsCorrect) {
+      //  Success(gameViewModel)
+    //}
 }
 
 @Composable
@@ -132,15 +132,7 @@ fun GameLayout(
                     )
                     {
                         Text(
-                            text = if (gameUiState.currentRow == numberOfRow) {
-                                gameUiState.currentAnswer[numberOfColumn]
-                            } else {
-                                if (gameUiState.currentRow > numberOfRow) {
-                                    gameUiState.userGuess[numberOfRow][numberOfColumn].toString()
-                                } else {
-                                    " "
-                                }
-                            },
+                            text = gameViewModel.visibleChar(numberOfRow,numberOfColumn),
                             fontSize = 32.sp
                         )
                     }
@@ -172,7 +164,7 @@ fun Success(
                 .background(Color.Red),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = if (gameUiState.answerIsCorrect)"" else " 1",
+            Text(text = if (1==1)"" else " 1",
                 fontSize = 48.sp)
         }
     }
@@ -215,7 +207,7 @@ fun Keyboard(
                         KeyboardButton(
                             text = it.toString(),
                             onClick = if (it != '*') {
-                                { gameViewModel.writeSymbol(it.toString()) }
+                                { gameViewModel.writeSymbol(it) }
                             } else {
                                 { gameViewModel.clearSymbol() }
                             }
@@ -277,9 +269,9 @@ fun KeyboardButton(
 fun GameScreenPreview() {
     WordleTheme {
         GameScreen()
-        Success(
-            viewModel()
-        )
+        //Success(
+          //  viewModel()
+        //)
 
     }
 }

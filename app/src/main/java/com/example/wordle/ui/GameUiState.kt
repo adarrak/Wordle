@@ -1,29 +1,29 @@
 package com.example.wordle.ui
 
+import kotlin.collections.MutableList
+
 data class GameUiState(
 
     val currentWord: String = "APPLE",
 
-    //угадал ли слово?
+    //не угадал слово и закончились попытки
     val isGameOver: Boolean = false,
 
     //правильный ответ?
-    val answerIsCorrect: Boolean = false,
+    val isGameWin: Boolean = false,
 
     // активные строка и столбец
     val currentRow: Int = 0,
     val currentColumn: Int = 0,
 
-
     // количесто попыток
     val numberOfAttempts: Int = 5,
 
-    // ответ в активном состоянии
-    val currentAnswer: MutableList<String> = MutableList(size = currentWord.length) { " " },
 
-    //список полученных ответов
-    val userGuess: MutableList<String> = MutableList(numberOfAttempts) { "" },
-
-
-
+    // текущее поле
+    val currentField: MutableList<MutableList<Char>> = MutableList(numberOfAttempts) {
+        MutableList(
+            currentWord.length
+        ) { ' ' }
+    }
 )
