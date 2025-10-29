@@ -1,5 +1,7 @@
 package com.example.wordle.ui
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,15 +19,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,7 +68,8 @@ fun GameScreen(
 
     }
     if (gameUiState.isGameOver || gameUiState.isGameWin) {
-     Success(gameViewModel)
+        Success(gameUiState.isGameWin,
+            { gameViewModel.restartGame() })
     }
 }
 
@@ -142,40 +147,43 @@ fun GameLayout(
 
 }
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun Success(
-    gameViewModel: GameViewModel,
+    isGameWin: Boolean,
+    onClick: () -> Unit
 ) {
-    val gameUiState by gameViewModel.uiState.collectAsState()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Transparent)
-            .clickable(onClick = { }, enabled = false),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_small))
-                .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)))
-                .aspectRatio(ratio = 1f)
-                .background(Color.Transparent),
-            contentAlignment = Alignment.Center
-        ) {
+    val activity = (LocalContext.current as Activity)
+    AlertDialog(
+        onDismissRequest = {},
+        title = { Text(text = stringResource(R.string.congratulations)) },
+        text = {
             Text(
-                text = if (1 == 1) "" else " 1",
-                fontSize = 48.sp
+                text = stringResource(
+                    R.string.again,
+                    if (isGameWin) stringResource(R.string.win)
+                    else stringResource(R.string.lose)
+                )
             )
-        }
-    }
-}
+        },
 
-@Composable
-fun GameOverButton() {
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "TRY AGAIN")
-    }
+        modifier = Modifier,
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    activity.finish()
+                }
+            ) {
+                Text(text = stringResource(R.string.exit))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onClick) {
+                Text(text = stringResource(R.string.letsGo))
+            }
+        }
+    )
+
 }
 
 
@@ -273,10 +281,9 @@ fun KeyboardButton(
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        GameScreen()
-        //Success(
-         // viewModel()
-        //)
+        //GameScreen()
+        Success(true,
+            {})
 
     }
 }

@@ -4,7 +4,7 @@ import android.R
 
 
 
-val allWordsFiveLatter: Set<String> =
+val allWords: Set<String> =
     setOf(
         "class",
         "bench",

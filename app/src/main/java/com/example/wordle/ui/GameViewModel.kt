@@ -2,6 +2,7 @@ package com.example.wordle.ui
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import com.example.wordle.data.allWords
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,11 +17,20 @@ val stringKeyboard: Set<String> =
 
 
 class GameViewModel : ViewModel() {
+
+
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
+    //слова которые уже были в игре
+    private val _usedWords = setOf<String>()
+
     private val _guessedLettersOnPlace: MutableSet<Char> = mutableSetOf()
     private val _guessedLetters: MutableSet<Char> = mutableSetOf()
+
+    init {
+        restartGame()
+    }
 
     fun deactivateRow(numberOfRow: Int): Boolean {
         return uiState.value.currentRow == numberOfRow
@@ -28,13 +38,26 @@ class GameViewModel : ViewModel() {
 
 
     //TODO не работает функция выбора квадратика
-    fun selectSquare(
-        numberOfColumn: Int,
-    ) {
+    fun selectSquare(numberOfColumn: Int) {
+        val row = uiState.value.currentRow
+        val previousColumn = uiState.value.currentColumn
+        if (previousColumn == numberOfColumn) return // если тот же столбец, не обновляем
+
         _uiState.update { state ->
+            val tempList = state.currentField.map { it.toMutableList() }.toMutableList()
+
+            // Сброс цвета предыдущего выделенного квадрата
+            tempList[row][previousColumn] = tempList[row][previousColumn].copy(
+                color = Color.DarkGray
+            )
+            // Установка цвета для нового выделенного квадрата
+            tempList[row][numberOfColumn] = tempList[row][numberOfColumn].copy(
+                color = Color.Gray
+            )
+
             state.copy(
                 currentColumn = numberOfColumn,
-                //currentField = tempList
+                currentField = tempList
             )
         }
     }
@@ -47,10 +70,13 @@ class GameViewModel : ViewModel() {
                 state.currentField.map { rowList -> rowList.toMutableList() }.toMutableList()
             tempList[row][column] = tempList[row][column].copy(
                 char = symbol,
-                isVisible = true
+                isVisible = true,
+                color = Color.DarkGray
             )
             val newColumn = if (column < state.currentWord.length - 1) column + 1 else column
-
+            tempList[row][newColumn] = tempList[row][newColumn].copy(
+                color = Color.Gray
+            )
             state.copy(
                 currentField = tempList,
                 currentColumn = newColumn
@@ -70,10 +96,15 @@ class GameViewModel : ViewModel() {
             } else {
                 currentColumn
             }
+            tempList[row][currentColumn] = tempList[row][currentColumn].copy(
+                color = Color.DarkGray
+            )
+
 
             tempList[row][newColumn] = tempList[row][newColumn].copy(
                 char = ' ',
-                isVisible = true
+                isVisible = true,
+                color = Color.Gray
             )
 
             state.copy(
@@ -93,10 +124,13 @@ class GameViewModel : ViewModel() {
         var gameOver = false
         var gameWin = false
 
+
+
         if (answer.contains(" ")) {
             //TODO: добавить функционал уведомления/подсветки для неполного ответа
             return
         }
+
         if (answer != uiState.value.currentWord) {
             checkRow(row)
             if (row != uiState.value.numberOfAttempts - 1) {
@@ -106,21 +140,47 @@ class GameViewModel : ViewModel() {
         } else {
             gameWin = true
             row = row + 1
+            column = 0
         }
         _uiState.update { state ->
+            val tempList = state.currentField.map { it.toMutableList() }.toMutableList()
+            tempList[row][column] = tempList[row][column].copy(
+                color = Color.Gray
+            )
+
+
             state.copy(
                 currentColumn = column,
                 currentRow = row,
                 isGameWin = gameWin,
-                isGameOver = gameOver
+                isGameOver = gameOver,
+                currentField = tempList
             )
+
         }
     }
 
 
     // символ отображающийся в клетке поля
     fun visibleChar(row: Int, column: Int): String {
-        return uiState.value.currentField[row][column].char.toString()
+        val square = uiState.value.currentField[row][column]
+
+        if (row == uiState.value.currentRow &&
+            square.char == ' ' &&
+            some(column) &&
+            !uiState.value.isGameOver &&
+            !uiState.value.isGameWin
+        ) {
+            return uiState.value.currentWord[column].toString()
+        }
+        return square.char.toString()
+    }
+
+    fun some(column: Int): Boolean {
+        for (row in 0 until uiState.value.currentRow) {
+            if (uiState.value.currentField[row][column].color == Color.Green) return true
+        }
+        return false
     }
 
 
@@ -180,6 +240,36 @@ class GameViewModel : ViewModel() {
             }
         } else Color.DarkGray
     }
+
+    fun selectCurrentWord(): String {
+        val word = allWords.random().uppercase()
+        return if (word in _usedWords) selectCurrentWord() else word
+    }
+
+    fun restartGame() {
+        val word = selectCurrentWord()
+        val row = 0
+        val column = 0
+        val numberOfAttempts = 5
+        val field = MutableList(numberOfAttempts) { i ->
+            MutableList(word.length) { j ->
+                Square(row = i, column = j)
+            }
+        }
+        _guessedLettersOnPlace.clear()
+        _guessedLetters.clear()
+        _uiState.update { state ->
+            state.copy(
+                currentWord = word,
+                currentRow = row,
+                currentColumn = column,
+                currentField = field,
+                isGameOver = false,
+                isGameWin = false
+            )
+        }
+    }
 }
+
 
 

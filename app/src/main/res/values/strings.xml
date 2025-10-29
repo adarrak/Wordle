@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Wordle</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="again">You %s!\nPlay again?</string>
+    <string name="win">WIN</string>
+    <string name="lose">Lose</string>
+
+    <string name="exit">Not this time</string>
+    <string name="letsGo">Next word</string>
 </resources>

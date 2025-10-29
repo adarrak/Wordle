@@ -5,7 +5,7 @@ import kotlin.collections.MutableList
 
 data class GameUiState(
 
-    val currentWord: String = "APPLE",
+    val currentWord: String = " ",
 
     //не угадал слово и закончились попытки
     val isGameOver: Boolean = false,
