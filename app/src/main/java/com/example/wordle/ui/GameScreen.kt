@@ -273,10 +273,10 @@ fun KeyboardButton(
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        //GameScreen()
-        Success(
-          viewModel()
-        )
+        GameScreen()
+        //Success(
+         // viewModel()
+        //)
 
     }
 }

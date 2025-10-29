@@ -2,11 +2,10 @@ package com.example.wordle.ui
 
 import kotlin.collections.MutableList
 
+
 data class GameUiState(
 
     val currentWord: String = "APPLE",
-
-
 
     //не угадал слово и закончились попытки
     val isGameOver: Boolean = false,
@@ -21,11 +20,10 @@ data class GameUiState(
     // количесто попыток
     val numberOfAttempts: Int = 5,
 
-
     // текущее поле
-    val currentField: MutableList<MutableList<Char>> = MutableList(numberOfAttempts) {
-        MutableList(
-            currentWord.length
-        ) { ' ' }
+    val currentField: MutableList<MutableList<Square>> = MutableList(numberOfAttempts) { i ->
+        MutableList(currentWord.length) { j ->
+            Square(row = i, column = j)
+        }
     }
 )

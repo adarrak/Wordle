@@ -1,6 +1,5 @@
 package com.example.wordle.ui
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,64 +19,66 @@ class GameViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
-    private var _gameOver = false
-    private var _gameWin = false
-
     private val _guessedLettersOnPlace: MutableSet<Char> = mutableSetOf()
     private val _guessedLetters: MutableSet<Char> = mutableSetOf()
-
-    // список подсказок
-    private val _hintList: MutableList<MutableList<Char>> =
-        MutableList(uiState.value.numberOfAttempts) { uiState.value.currentWord.toMutableList() }
-
-
-    private val _tipWord = uiState.value.currentWord.toList()
 
     fun deactivateRow(numberOfRow: Int): Boolean {
         return uiState.value.currentRow == numberOfRow
     }
 
+
+    //TODO не работает функция выбора квадратика
     fun selectSquare(
         numberOfColumn: Int,
     ) {
-        _uiState.update { it ->
-            it.copy(currentColumn = numberOfColumn)
+        _uiState.update { state ->
+            state.copy(
+                currentColumn = numberOfColumn,
+                //currentField = tempList
+            )
         }
     }
 
     fun writeSymbol(symbol: Char) {
+        _uiState.update { state ->
+            val row = state.currentRow
+            val column = state.currentColumn
+            val tempList =
+                state.currentField.map { rowList -> rowList.toMutableList() }.toMutableList()
+            tempList[row][column] = tempList[row][column].copy(
+                char = symbol,
+                isVisible = true
+            )
+            val newColumn = if (column < state.currentWord.length - 1) column + 1 else column
 
-        _uiState.update { it ->
-            val row = uiState.value.currentRow
-            val column = uiState.value.currentColumn
-            _hintList[row][column] = symbol
-            val tempList = uiState.value.currentField.map { it.toMutableList() }.toMutableList()
-            tempList[row][column] = symbol
-            if (column < uiState.value.currentWord.length) {
-                it.copy(
-                    currentField = tempList,
-                    currentColumn = if (column == it.currentWord.length - 1) {
-                        column
-                    } else {
-                        column + 1
-                    }
-                )
-            } else it.copy()
+            state.copy(
+                currentField = tempList,
+                currentColumn = newColumn
+            )
         }
     }
 
+
     fun clearSymbol() {
-        _uiState.update { it ->
-            val row = uiState.value.currentRow
-            var column = uiState.value.currentColumn
-            val tempList = uiState.value.currentField.map { it.toMutableList() }.toMutableList()
-            if (tempList[row][column] == ' ') {
-                if (column > 0) column = column - 1
+        _uiState.update { state ->
+            val row = state.currentRow
+            val currentColumn = state.currentColumn
+            val tempList = state.currentField.map { it.toMutableList() }.toMutableList()
+
+            val newColumn = if (tempList[row][currentColumn].char == ' ' && currentColumn > 0) {
+                currentColumn - 1
+            } else {
+                currentColumn
             }
-            tempList[row][column] = ' '
-            it.copy(
+
+            tempList[row][newColumn] = tempList[row][newColumn].copy(
+                char = ' ',
+                isVisible = true
+            )
+
+            state.copy(
                 currentField = tempList,
-                currentColumn = column
+                currentColumn = newColumn
             )
         }
     }
@@ -86,91 +87,87 @@ class GameViewModel : ViewModel() {
     fun checkButton() {
         var row = uiState.value.currentRow
         var column = uiState.value.currentColumn
-        val answer = uiState.value.currentField[row].joinToString("")
-        checkRow(row)
-        if (!answer.contains(" ")) {
-            if (answer != uiState.value.currentWord) {
-                if (row != uiState.value.numberOfAttempts - 1) {
-                    row = row + 1
-                    column = 0
-                } else _gameOver = true
-            } else {
-                _gameWin = true
-                row = row + 1
-            }
-            _uiState.update { it ->
-                it.copy(
-                    currentColumn = column,
-                    currentRow = row,
-                    isGameWin = _gameWin,
-                    isGameOver = _gameOver
-                )
-            }
+        val answer = uiState.value.currentField[row].joinToString(separator = "") { square ->
+            square.char.toString()
+        }
+        var gameOver = false
+        var gameWin = false
 
+        if (answer.contains(" ")) {
+            //TODO: добавить функционал уведомления/подсветки для неполного ответа
+            return
+        }
+        if (answer != uiState.value.currentWord) {
+            checkRow(row)
+            if (row != uiState.value.numberOfAttempts - 1) {
+                row = row + 1
+                column = 0
+            } else gameOver = true
         } else {
-            //добавить функционал того что не полная строка для ответа
+            gameWin = true
+            row = row + 1
+        }
+        _uiState.update { state ->
+            state.copy(
+                currentColumn = column,
+                currentRow = row,
+                isGameWin = gameWin,
+                isGameOver = gameOver
+            )
         }
     }
 
+
     // символ отображающийся в клетке поля
     fun visibleChar(row: Int, column: Int): String {
-
-        for (i in 0 until uiState.value.currentRow) {
-            if (_hintList[i][column] == '*' &&
-                row == uiState.value.currentRow &&
-                uiState.value.currentField[row][column] == ' '
-            ) return uiState.value.currentWord[column].toString()
-        }
-        return uiState.value.currentField[row][column].toString()
+        return uiState.value.currentField[row][column].char.toString()
     }
 
 
     fun checkRow(row: Int) {
-        val answer = uiState.value.currentWord.toMutableList()
-
-        for (i in 0 until _hintList[row].size) {
-            if (answer[i] == _hintList[row][i]) {
-
-                //заглушка того что буква на правильном месте
-                _guessedLettersOnPlace.add(answer[i])
-                _hintList[row][i] = '*'
-                answer[i] = '*'
+        val userAnswer = uiState.value.currentField[row].map { it.char }.toMutableList()
+        val currentWord = uiState.value.currentWord.toMutableList()
+        // Помечаем правильные символы '*'
+        for (i in 0 until userAnswer.size) {
+            if (userAnswer[i] == currentWord[i]) {
+                userAnswer[i] = '*'
+                currentWord[i] = '*'
             }
         }
-        val countOfSymbols = answer.groupingBy { it }.eachCount().toMutableMap()
-        for (i in 0 until _hintList[row].size) {
-            val symbol = _hintList[row][i]
+        // Помечаем символы в слове, но не на своих местах '-'
+        val countOfSymbols = currentWord.groupingBy { it }.eachCount().toMutableMap()
+        for (i in 0 until userAnswer.size) {
+            val symbol = userAnswer[i]
             if (symbol != '*') {
-                if (symbol in answer && countOfSymbols.getOrDefault(symbol, 0) > 0) {
-
-                    //заглушка того что буква есть в слове но не на правильном месте
-                    _hintList[row][i] = '-'
+                if (symbol in currentWord && countOfSymbols.getOrDefault(symbol, 0) > 0) {
+                    userAnswer[i] = '-'
                     countOfSymbols[symbol] = countOfSymbols.getOrDefault(symbol, 0) - 1
                 }
             }
         }
-    }
-
-    fun checkColorSquare(row: Int, column: Int): Color {
-        val currentRow = uiState.value.currentRow
-        return if (row > currentRow) Color.DarkGray
-        else {
-            if (row == currentRow) {
-                if (column == uiState.value.currentColumn) Color.Gray
-                else Color.DarkGray
-            } else {
-                val symbol = _hintList[row][column]
-                return when (symbol) {
-                    '*' -> Color.Green
-                    '-' -> Color.Yellow
-                    else -> Color.DarkGray
-                }
+        _uiState.update { state ->
+            val tempList = state.currentField.map { it.toMutableList() }.toMutableList()
+            for (column in 0 until currentWord.size) {
+                tempList[row][column] = tempList[row][column].copy(
+                    color = when (userAnswer[column]) {
+                        '*' -> Color.Green
+                        '-' -> Color.Yellow
+                        else -> Color.DarkGray
+                    }
+                )
             }
+            state.copy(
+                currentField = tempList
+            )
         }
     }
 
+    fun checkColorSquare(row: Int, column: Int): Color {
+        return uiState.value.currentField[row][column].color
+    }
 
-    //не работает цвет клавиатуры, нужно разобраться
+
+    //TODO не работает цвет клавиатуры, нужно разобраться
 
     fun colorKeyboard(text: String): Color {
         val symbol = text.toCharArray()
