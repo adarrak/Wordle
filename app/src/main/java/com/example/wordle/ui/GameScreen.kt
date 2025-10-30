@@ -3,6 +3,7 @@ package com.example.wordle.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +43,65 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.wordle.R
 import com.example.wordle.ui.theme.WordleTheme
 
+@Composable
+fun convertColors(
+    gameViewModel: GameViewModel = viewModel(),
+    numberOfRow: Int,
+    numberOfColumn: Int
+): Color {
+    return when (
+        gameViewModel.checkColorSquare(
+            row = numberOfRow,
+            column = numberOfColumn
+        )) {
+        Color.DarkGray -> MaterialTheme.colorScheme.outlineVariant
+        Color.Gray -> MaterialTheme.colorScheme.outline
+        Color.Green -> MaterialTheme.colorScheme.tertiary
+        Color.Yellow -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.surface
+    }
+}
+
+@Composable
+fun keyboardButtonColor(text: String, gameViewModel: GameViewModel): Color {
+    return when (gameViewModel.colorKeyboard(text)) {
+        Color.Gray -> MaterialTheme.colorScheme.outline
+        Color.Yellow -> MaterialTheme.colorScheme.primary
+        Color.Green -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.surface
+    }
+
+
+}
+
+@Composable
+fun roundedCorner(numberOfRow: Int, numberOfColumn: Int, gameViewModel: GameViewModel): Shape {
+    val gameUiState by gameViewModel.uiState.collectAsState()
+    val shape = when (Pair(numberOfRow, numberOfColumn)) {
+        Pair(
+            0,
+            0
+        ) -> RoundedCornerShape(topStart = dimensionResource(R.dimen.padding_medium))
+
+        Pair(
+            0,
+            gameUiState.currentWord.length - 1
+        ) -> RoundedCornerShape(topEnd = dimensionResource(R.dimen.padding_medium))
+
+        Pair(
+            gameUiState.numberOfAttempts - 1,
+            0
+        ) -> RoundedCornerShape(bottomStart = dimensionResource(R.dimen.padding_medium))
+
+        Pair(
+            gameUiState.numberOfAttempts - 1,
+            gameUiState.currentWord.length - 1
+        ) -> RoundedCornerShape(bottomEnd = dimensionResource(R.dimen.padding_medium))
+
+        else -> RoundedCornerShape(size = 0.dp)
+    }
+    return shape
+}
 
 @Composable
 fun GameScreen(
@@ -47,6 +110,7 @@ fun GameScreen(
     ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
+
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -68,10 +132,12 @@ fun GameScreen(
 
     }
     if (gameUiState.isGameOver || gameUiState.isGameWin) {
-        Success(gameUiState.isGameWin,
-            { gameViewModel.restartGame() })
+        Success(
+            gameUiState.isGameWin
+        ) { gameViewModel.restartGame() }
     }
 }
+
 
 @Composable
 fun GameLayout(
@@ -93,32 +159,7 @@ fun GameLayout(
                         modifier = Modifier
                             .weight(weight = 1f)
                             .aspectRatio(1f)
-                            .clip(
-                                shape = when (Pair(numberOfRow, numberOfColumn)) {
-                                    Pair(
-                                        0,
-                                        0
-                                    ) -> RoundedCornerShape(topStart = dimensionResource(R.dimen.padding_medium))
-
-                                    Pair(
-                                        0,
-                                        gameUiState.currentWord.length - 1
-                                    ) -> RoundedCornerShape(topEnd = dimensionResource(R.dimen.padding_medium))
-
-                                    Pair(
-                                        gameUiState.numberOfAttempts - 1,
-                                        0
-                                    ) -> RoundedCornerShape(bottomStart = dimensionResource(R.dimen.padding_medium))
-
-                                    Pair(
-                                        gameUiState.numberOfAttempts - 1,
-                                        gameUiState.currentWord.length - 1
-                                    ) -> RoundedCornerShape(bottomEnd = dimensionResource(R.dimen.padding_medium))
-
-                                    else -> RoundedCornerShape(size = 0.dp)
-                                }
-
-                            )
+                            .clip(shape = roundedCorner(numberOfRow, numberOfColumn, gameViewModel))
                             .clickable(
                                 enabled = gameViewModel.deactivateRow(numberOfRow),
                                 onClick = {
@@ -126,10 +167,15 @@ fun GameLayout(
                                 }
                             )
                             .background(
-                                color = gameViewModel.checkColorSquare(
-                                    row = numberOfRow,
-                                    column = numberOfColumn
+                                color = convertColors(
+                                    numberOfRow = numberOfRow,
+                                    numberOfColumn = numberOfColumn
                                 )
+                            )
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.inverseSurface,
+                                shape = roundedCorner(numberOfRow, numberOfColumn, gameViewModel)
                             )
                             .padding(dimensionResource(R.dimen.padding_small)),
                         contentAlignment = Alignment.Center
@@ -138,6 +184,7 @@ fun GameLayout(
                         Text(
                             text = gameViewModel.visibleChar(numberOfRow, numberOfColumn),
                             fontSize = 32.sp,
+                            color = gameViewModel.isHintSymbol()
                         )
                     }
                 }
@@ -156,7 +203,13 @@ fun Success(
     val activity = (LocalContext.current as Activity)
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(text = stringResource(R.string.congratulations)) },
+        title = {
+            Text(
+                text = if (isGameWin) stringResource(R.string.congratulations) else stringResource(
+                    R.string.doNotUpset
+                )
+            )
+        },
         text = {
             Text(
                 text = stringResource(
@@ -183,7 +236,6 @@ fun Success(
             }
         }
     )
-
 }
 
 
@@ -212,7 +264,6 @@ fun Keyboard(
                         contentAlignment = Alignment.Center
                     )
                     {
-
                         KeyboardButton(
                             text = it.toString(),
                             onClick = if (it != '*') {
@@ -242,18 +293,23 @@ fun Keyboard(
     }
 }
 
+
 @Composable
 fun KeyboardButton(
     onClick: () -> Unit,
     text: String,
     gameViewModel: GameViewModel,
 ) {
-    val color = gameViewModel.colorKeyboard(text)
     Box(
         modifier = Modifier
             .fillMaxSize()
             .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-            .background(color)
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.inverseSurface,
+                shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small))
+            )
+            .background(keyboardButtonColor(text, gameViewModel))
             .clickable(
                 onClick = onClick
             )
@@ -281,9 +337,10 @@ fun KeyboardButton(
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        //GameScreen()
-        Success(true,
-            {})
+        GameScreen()
+        Success(
+            true
+        ) {}
 
     }
 }

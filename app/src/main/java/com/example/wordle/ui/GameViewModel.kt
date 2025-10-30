@@ -1,5 +1,8 @@
 package com.example.wordle.ui
 
+import androidx.annotation.ColorInt
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.wordle.data.allWords
@@ -7,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import androidx.compose.runtime.collectAsState
 
 val stringKeyboard: Set<String> =
     setOf(
@@ -18,12 +22,11 @@ val stringKeyboard: Set<String> =
 
 class GameViewModel : ViewModel() {
 
-
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
     //слова которые уже были в игре
-    private val _usedWords = setOf<String>()
+    private val _usedWords = mutableSetOf<String>()
 
     private val _guessedLettersOnPlace: MutableSet<Char> = mutableSetOf()
     private val _guessedLetters: MutableSet<Char> = mutableSetOf()
@@ -37,7 +40,6 @@ class GameViewModel : ViewModel() {
     }
 
 
-    //TODO не работает функция выбора квадратика
     fun selectSquare(numberOfColumn: Int) {
         val row = uiState.value.currentRow
         val previousColumn = uiState.value.currentColumn
@@ -167,7 +169,7 @@ class GameViewModel : ViewModel() {
 
         if (row == uiState.value.currentRow &&
             square.char == ' ' &&
-            some(column) &&
+            colorCheck(column) &&
             !uiState.value.isGameOver &&
             !uiState.value.isGameWin
         ) {
@@ -176,7 +178,8 @@ class GameViewModel : ViewModel() {
         return square.char.toString()
     }
 
-    fun some(column: Int): Boolean {
+
+    fun colorCheck(column: Int): Boolean {
         for (row in 0 until uiState.value.currentRow) {
             if (uiState.value.currentField[row][column].color == Color.Green) return true
         }
@@ -222,23 +225,15 @@ class GameViewModel : ViewModel() {
         }
     }
 
+
     fun checkColorSquare(row: Int, column: Int): Color {
         return uiState.value.currentField[row][column].color
     }
 
 
-    //TODO не работает цвет клавиатуры, нужно разобраться
 
     fun colorKeyboard(text: String): Color {
-        val symbol = text.toCharArray()
-        return if (symbol.size == 1) {
-            if (symbol[0] in _guessedLettersOnPlace) {
-                Color.Green
-            } else {
-                if (symbol[0] in _guessedLetters) Color.Yellow
-                else Color.DarkGray
-            }
-        } else Color.DarkGray
+        return Color.DarkGray
     }
 
     fun selectCurrentWord(): String {
@@ -248,6 +243,7 @@ class GameViewModel : ViewModel() {
 
     fun restartGame() {
         val word = selectCurrentWord()
+        _usedWords.add(word)
         val row = 0
         val column = 0
         val numberOfAttempts = 5
@@ -268,6 +264,10 @@ class GameViewModel : ViewModel() {
                 isGameWin = false
             )
         }
+    }
+
+    fun isHintSymbol():Color{
+        return Color.Black
     }
 }
 
