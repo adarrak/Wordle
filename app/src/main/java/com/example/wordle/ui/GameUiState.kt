@@ -22,7 +22,7 @@ data class GameUiState(
     val numberOfAttempts: Int = 5,
 
     //map клавиатуры
- //   val mapOfKeyboard: MutableMap<Char, Color> = mutableMapOf<Char, Color>(stringKeyboard, Color.Yellow),
+ //    val mapOfKeyboard: MutableMap<Char, Color> = mutableMapOf<Char, Color>(stringKeyboard, Color.Yellow),
 
     // текущее поле
     val currentField: MutableList<MutableList<Square>> = MutableList(numberOfAttempts) { i ->
