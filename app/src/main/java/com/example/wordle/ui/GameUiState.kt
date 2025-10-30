@@ -1,8 +1,13 @@
 package com.example.wordle.ui
 
-import androidx.compose.ui.graphics.Color
 import kotlin.collections.MutableList
 
+val stringKeyboardEng: List<String> =
+    listOf(
+        "QWERTYUIOP",
+        "ASDFGHJKL",
+        "ZXCVBNM*"
+    )
 
 data class GameUiState(
 
@@ -21,9 +26,16 @@ data class GameUiState(
     // количесто попыток
     val numberOfAttempts: Int = 5,
 
-    //map клавиатуры
- //    val mapOfKeyboard: MutableMap<Char, Color> = mutableMapOf<Char, Color>(stringKeyboard, Color.Yellow),
+    //клавиатура
 
+    val currentKeyboardButtons: MutableList<MutableList<KeyboardButton>> = MutableList(
+        stringKeyboardEng.size
+    ) { it ->
+        val string = stringKeyboardEng[it]
+        MutableList(string.length) { index ->
+            KeyboardButton(char = string[index])
+        }
+    },
     // текущее поле
     val currentField: MutableList<MutableList<Square>> = MutableList(numberOfAttempts) { i ->
         MutableList(currentWord.length) { j ->

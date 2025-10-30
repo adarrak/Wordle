@@ -1,8 +1,5 @@
 package com.example.wordle.ui
 
-import androidx.annotation.ColorInt
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.wordle.data.allWords
@@ -10,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import androidx.compose.runtime.collectAsState
 
 val stringKeyboard: Set<String> =
     setOf(
@@ -22,14 +18,13 @@ val stringKeyboard: Set<String> =
 
 class GameViewModel : ViewModel() {
 
+
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
+
     //слова которые уже были в игре
     private val _usedWords = mutableSetOf<String>()
-
-    private val _guessedLettersOnPlace: MutableSet<Char> = mutableSetOf()
-    private val _guessedLetters: MutableSet<Char> = mutableSetOf()
 
     init {
         restartGame()
@@ -128,6 +123,7 @@ class GameViewModel : ViewModel() {
 
 
 
+
         if (answer.contains(" ")) {
             //TODO: добавить функционал уведомления/подсветки для неполного ответа
             return
@@ -190,6 +186,7 @@ class GameViewModel : ViewModel() {
     fun checkRow(row: Int) {
         val userAnswer = uiState.value.currentField[row].map { it.char }.toMutableList()
         val currentWord = uiState.value.currentWord.toMutableList()
+
         // Помечаем правильные символы '*'
         for (i in 0 until userAnswer.size) {
             if (userAnswer[i] == currentWord[i]) {
@@ -231,11 +228,6 @@ class GameViewModel : ViewModel() {
     }
 
 
-
-    fun colorKeyboard(text: String): Color {
-        return Color.DarkGray
-    }
-
     fun selectCurrentWord(): String {
         val word = allWords.random().uppercase()
         return if (word in _usedWords) selectCurrentWord() else word
@@ -252,8 +244,7 @@ class GameViewModel : ViewModel() {
                 Square(row = i, column = j)
             }
         }
-        _guessedLettersOnPlace.clear()
-        _guessedLetters.clear()
+
         _uiState.update { state ->
             state.copy(
                 currentWord = word,
@@ -261,13 +252,15 @@ class GameViewModel : ViewModel() {
                 currentColumn = column,
                 currentField = field,
                 isGameOver = false,
-                isGameWin = false
+                isGameWin = false,
             )
         }
     }
 
-    fun isHintSymbol():Color{
-        return Color.Black
+    fun isHintSymbol(row: Int, column: Int): Color {
+        return if (uiState.value.currentRow == row &&
+            uiState.value.currentField[row][column].char == ' '
+        ) Color.Gray else Color.Black
     }
 }
 

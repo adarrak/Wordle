@@ -62,17 +62,6 @@ fun convertColors(
     }
 }
 
-@Composable
-fun keyboardButtonColor(text: String, gameViewModel: GameViewModel): Color {
-    return when (gameViewModel.colorKeyboard(text)) {
-        Color.Gray -> MaterialTheme.colorScheme.outline
-        Color.Yellow -> MaterialTheme.colorScheme.primary
-        Color.Green -> MaterialTheme.colorScheme.tertiary
-        else -> MaterialTheme.colorScheme.surface
-    }
-
-
-}
 
 @Composable
 fun roundedCorner(numberOfRow: Int, numberOfColumn: Int, gameViewModel: GameViewModel): Shape {
@@ -184,14 +173,19 @@ fun GameLayout(
                         Text(
                             text = gameViewModel.visibleChar(numberOfRow, numberOfColumn),
                             fontSize = 32.sp,
-                            color = gameViewModel.isHintSymbol()
+                            color = if (gameViewModel.isHintSymbol(
+                                    numberOfRow,
+                                    numberOfColumn
+                                ) == Color.Black
+                            )
+                                MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.surfaceContainerHigh
                         )
                     }
                 }
             }
         }
     }
-
 }
 
 @SuppressLint("ContextCastToActivity")
@@ -238,7 +232,41 @@ fun Success(
     )
 }
 
+//TODO переделать клавиатуру
+@Composable
+fun Keyboard(
+    gameViewModel: GameViewModel,
+) {
+    val gameUiState by gameViewModel.uiState.collectAsState()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_small))
+    ) {
+        for (item in gameUiState.currentKeyboardButtons) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_small))
+            ) {
+                item.forEach { it ->
 
+                    Box(
+                        modifier = Modifier
+                            .weight(if (it.char != '*') 1f else 2f),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+/*
 @Composable
 fun Keyboard(
     gameViewModel: GameViewModel,
@@ -300,6 +328,7 @@ fun KeyboardButton(
     text: String,
     gameViewModel: GameViewModel,
 ) {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -309,7 +338,7 @@ fun KeyboardButton(
                 color = MaterialTheme.colorScheme.inverseSurface,
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small))
             )
-            .background(keyboardButtonColor(text, gameViewModel))
+            .background(Color.Red)
             .clickable(
                 onClick = onClick
             )
@@ -330,8 +359,10 @@ fun KeyboardButton(
 
         }
     }
+
 }
 
+ */
 
 @Preview(showBackground = true, widthDp = 427, heightDp = 952)
 @Composable
