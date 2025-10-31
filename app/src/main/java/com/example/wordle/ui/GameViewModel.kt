@@ -8,19 +8,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-val stringKeyboard: Set<String> =
-    setOf(
-        "QWERTYUIOP",
-        "ASDFGHJKL",
-        "ZXCVBNM*"
-    )
 
 
 class GameViewModel : ViewModel() {
 
 
+
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
+    private val _isRightLetter: MutableSet<Char> = mutableSetOf()
+    private val _isNearLetter: MutableSet<Char> = mutableSetOf()
+    private val _isWrongLetter: MutableSet<Char> = mutableSetOf()
 
 
     //слова которые уже были в игре
@@ -120,7 +119,7 @@ class GameViewModel : ViewModel() {
         }
         var gameOver = false
         var gameWin = false
-
+        val keyboardButtons = uiState.value.currentKeyboardButtons.toMutableList()
 
 
 
@@ -140,6 +139,21 @@ class GameViewModel : ViewModel() {
             row = row + 1
             column = 0
         }
+
+        for (i in 0 until keyboardButtons.size){
+            for (j in 0 until keyboardButtons[i].size){
+                when (keyboardButtons[i][j].char){
+                    in _isRightLetter -> keyboardButtons[i][j].color = Color.Green
+                    in _isNearLetter -> keyboardButtons[i][j].color = Color.Yellow
+                    in _isWrongLetter -> keyboardButtons[i][j].color = Color.Gray
+                }
+
+            //if (keyboardButtons[i][j].char in _isRightLetter){
+                  //  keyboardButtons
+                //}
+            }
+        }
+
         _uiState.update { state ->
             val tempList = state.currentField.map { it.toMutableList() }.toMutableList()
             tempList[row][column] = tempList[row][column].copy(
@@ -152,7 +166,8 @@ class GameViewModel : ViewModel() {
                 currentRow = row,
                 isGameWin = gameWin,
                 isGameOver = gameOver,
-                currentField = tempList
+                currentField = tempList,
+                currentKeyboardButtons = keyboardButtons
             )
 
         }
@@ -190,9 +205,14 @@ class GameViewModel : ViewModel() {
         // Помечаем правильные символы '*'
         for (i in 0 until userAnswer.size) {
             if (userAnswer[i] == currentWord[i]) {
+                _isRightLetter.add(currentWord[i])
                 userAnswer[i] = '*'
                 currentWord[i] = '*'
             }
+            else{
+                if (userAnswer[i] !in currentWord) _isWrongLetter.add(userAnswer[i])
+            }
+
         }
         // Помечаем символы в слове, но не на своих местах '-'
         val countOfSymbols = currentWord.groupingBy { it }.eachCount().toMutableMap()
@@ -200,6 +220,7 @@ class GameViewModel : ViewModel() {
             val symbol = userAnswer[i]
             if (symbol != '*') {
                 if (symbol in currentWord && countOfSymbols.getOrDefault(symbol, 0) > 0) {
+                    if (symbol !in _isRightLetter) _isNearLetter.add(symbol)
                     userAnswer[i] = '-'
                     countOfSymbols[symbol] = countOfSymbols.getOrDefault(symbol, 0) - 1
                 }
@@ -244,6 +265,18 @@ class GameViewModel : ViewModel() {
                 Square(row = i, column = j)
             }
         }
+        val currentKeyboardButtons: MutableList<MutableList<KeyboardButton>> = MutableList(
+            stringKeyboardEng.size
+        ) { it ->
+            val string = stringKeyboardEng[it]
+            MutableList(string.length) { index ->
+                KeyboardButton(char = string[index])
+            }
+        }
+
+        _isRightLetter.clear()
+        _isNearLetter.clear()
+        _isWrongLetter.clear()
 
         _uiState.update { state ->
             state.copy(
@@ -253,6 +286,7 @@ class GameViewModel : ViewModel() {
                 currentField = field,
                 isGameOver = false,
                 isGameWin = false,
+                currentKeyboardButtons = currentKeyboardButtons
             )
         }
     }

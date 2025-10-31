@@ -43,25 +43,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.wordle.R
 import com.example.wordle.ui.theme.WordleTheme
 
-@Composable
-fun convertColors(
-    gameViewModel: GameViewModel = viewModel(),
-    numberOfRow: Int,
-    numberOfColumn: Int
-): Color {
-    return when (
-        gameViewModel.checkColorSquare(
-            row = numberOfRow,
-            column = numberOfColumn
-        )) {
-        Color.DarkGray -> MaterialTheme.colorScheme.outlineVariant
-        Color.Gray -> MaterialTheme.colorScheme.outline
-        Color.Green -> MaterialTheme.colorScheme.tertiary
-        Color.Yellow -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.surface
-    }
-}
-
 
 @Composable
 fun roundedCorner(numberOfRow: Int, numberOfColumn: Int, gameViewModel: GameViewModel): Shape {
@@ -157,8 +138,10 @@ fun GameLayout(
                             )
                             .background(
                                 color = convertColors(
-                                    numberOfRow = numberOfRow,
-                                    numberOfColumn = numberOfColumn
+                                    gameViewModel.checkColorSquare(
+                                        row = numberOfRow,
+                                        column = numberOfColumn
+                                    )
                                 )
                             )
                             .border(
@@ -256,15 +239,89 @@ fun Keyboard(
                             .weight(if (it.char != '*') 1f else 2f),
                         contentAlignment = Alignment.Center
                     ) {
-
+                        KeyboardButton(
+                            text = it.char.toString(),
+                            onClick = if (it.char != '*') {
+                                { gameViewModel.writeSymbol(it.char) }
+                            } else {
+                                { gameViewModel.clearSymbol() }
+                            },
+                            color = convertColors(it.color)
+                        )
                     }
                 }
             }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        )
+        {
+            KeyboardButton(
+                onClick = { gameViewModel.checkButton() },
+                text = "CHECK",
+                color = convertColors(Color.DarkGray)
+            )
+
         }
 
     }
 
 }
+
+
+@Composable
+fun convertColors(color: Color): Color {
+    return when (color) {
+        Color.DarkGray -> MaterialTheme.colorScheme.outlineVariant
+        Color.Gray -> MaterialTheme.colorScheme.outline
+        Color.Green -> MaterialTheme.colorScheme.tertiary
+        Color.Yellow -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.surface
+    }
+}
+
+@Composable
+fun KeyboardButton(
+    onClick: () -> Unit,
+    text: String,
+    color: Color
+) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.inverseSurface,
+                shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small))
+            )
+            .background(color)
+            .clickable(
+                onClick = onClick
+            )
+            .padding(dimensionResource(R.dimen.padding_small)),
+        contentAlignment = Alignment.Center
+    )
+    {
+        if (text != "*") {
+            Text(
+                text = text,
+                fontSize = 24.sp
+            )
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.Backspace,
+                contentDescription = "Clear",
+            )
+
+        }
+    }
+
+}
+
 
 /*
 @Composable
@@ -322,45 +379,7 @@ fun Keyboard(
 }
 
 
-@Composable
-fun KeyboardButton(
-    onClick: () -> Unit,
-    text: String,
-    gameViewModel: GameViewModel,
-) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.inverseSurface,
-                shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small))
-            )
-            .background(Color.Red)
-            .clickable(
-                onClick = onClick
-            )
-            .padding(dimensionResource(R.dimen.padding_small)),
-        contentAlignment = Alignment.Center
-    )
-    {
-        if (text != "*") {
-            Text(
-                text = text,
-                fontSize = 24.sp
-            )
-        } else {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Backspace,
-                contentDescription = "Clear",
-            )
-
-        }
-    }
-
-}
 
  */
 
