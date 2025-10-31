@@ -302,14 +302,14 @@ fun KeyboardButton(
             .clickable(
                 onClick = onClick
             )
-            .padding(dimensionResource(R.dimen.padding_small)),
+            .padding(vertical = dimensionResource(R.dimen.padding_small)),
         contentAlignment = Alignment.Center
     )
     {
         if (text != "*") {
             Text(
                 text = text,
-                fontSize = 24.sp
+                fontSize = 18.sp
             )
         } else {
             Icon(
