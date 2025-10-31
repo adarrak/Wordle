@@ -1,12 +1,22 @@
 package com.example.wordle.ui
 
+import com.example.wordle.data.KeyboardButton
+import com.example.wordle.data.Square
 import kotlin.collections.MutableList
 
-val stringKeyboardEng: List<String> =
+/*val stringKeyboardEng: List<String> =
     listOf(
         "QWERTYUIOP",
         "ASDFGHJKL",
         "ZXCVBNM*"
+    )
+
+ */
+val stringKeyboardEng: List<String> =
+    listOf(
+        "ЙЦУКЕНГШЩЗХЪ",
+        "ФЫВАПРОЛДЖЭ",
+        "ЯЧСМИТЬБЮ*"
     )
 
 data class GameUiState(

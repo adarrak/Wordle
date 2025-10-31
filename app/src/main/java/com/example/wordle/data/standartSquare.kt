@@ -1,4 +1,4 @@
-package com.example.wordle.ui
+package com.example.wordle.data
 
 import androidx.compose.ui.graphics.Color
 

@@ -2,6 +2,8 @@ package com.example.wordle.ui
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import com.example.wordle.data.KeyboardButton
+import com.example.wordle.data.Square
 import com.example.wordle.data.allWords
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -136,21 +138,16 @@ class GameViewModel : ViewModel() {
             } else gameOver = true
         } else {
             gameWin = true
-            row = row + 1
             column = 0
         }
 
         for (i in 0 until keyboardButtons.size){
             for (j in 0 until keyboardButtons[i].size){
-                when (keyboardButtons[i][j].char){
+                when (keyboardButtons[i][j].char) {
                     in _isRightLetter -> keyboardButtons[i][j].color = Color.Green
                     in _isNearLetter -> keyboardButtons[i][j].color = Color.Yellow
                     in _isWrongLetter -> keyboardButtons[i][j].color = Color.Gray
                 }
-
-            //if (keyboardButtons[i][j].char in _isRightLetter){
-                  //  keyboardButtons
-                //}
             }
         }
 
@@ -259,7 +256,7 @@ class GameViewModel : ViewModel() {
         _usedWords.add(word)
         val row = 0
         val column = 0
-        val numberOfAttempts = 5
+        val numberOfAttempts = word.length
         val field = MutableList(numberOfAttempts) { i ->
             MutableList(word.length) { j ->
                 Square(row = i, column = j)
