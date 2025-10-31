@@ -280,6 +280,7 @@ class GameViewModel : ViewModel() {
                 currentWord = word,
                 currentRow = row,
                 currentColumn = column,
+                numberOfAttempts = word.length,
                 currentField = field,
                 isGameOver = false,
                 isGameWin = false,
