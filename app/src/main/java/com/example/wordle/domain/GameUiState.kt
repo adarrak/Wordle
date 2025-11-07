@@ -1,18 +1,13 @@
-package com.example.wordle.ui
+package com.example.wordle.domain
 
-import com.example.wordle.data.KeyboardButton
-import com.example.wordle.data.Square
+import com.example.wordle.domain.usecase.KeyboardButton
+import com.example.wordle.domain.usecase.Square
 import kotlin.collections.MutableList
 
-/*val stringKeyboardEng: List<String> =
-    listOf(
-        "QWERTYUIOP",
-        "ASDFGHJKL",
-        "ZXCVBNM*"
-    )
 
- */
-val stringKeyboardEng: List<String> =
+// размер поля
+const val SIZE_OF_FIELD = 5
+val stringKeyboard: List<String> =
     listOf(
         "ЙЦУКЕНГШЩЗХЪ",
         "ФЫВАПРОЛДЖЭ",
@@ -33,23 +28,21 @@ data class GameUiState(
     val currentRow: Int = 0,
     val currentColumn: Int = 0,
 
-    // количесто попыток
-    val numberOfAttempts: Int = 5,
 
     //клавиатура
 
     val currentKeyboardButtons: MutableList<MutableList<KeyboardButton>> = MutableList(
-        stringKeyboardEng.size
+        stringKeyboard.size
     ) { it ->
-        val string = stringKeyboardEng[it]
+        val string = stringKeyboard[it]
         MutableList(string.length) { index ->
             KeyboardButton(char = string[index])
         }
     },
     // текущее поле
-    val currentField: MutableList<MutableList<Square>> = MutableList(numberOfAttempts) { i ->
-        MutableList(currentWord.length) { j ->
-            Square(row = i, column = j)
-        }
+    val currentField: List<Square> = List(SIZE_OF_FIELD * SIZE_OF_FIELD) { number ->
+        Square(
+            number
+        )
     }
 )

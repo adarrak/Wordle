@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.wordle.ui.GameScreen
+import com.example.wordle.ui.game.GameScreen
 import com.example.wordle.ui.theme.WordleTheme
 
 class MainActivity : ComponentActivity() {
