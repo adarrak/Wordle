@@ -2,26 +2,16 @@ package com.example.wordle.ui.game
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,22 +20,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.wordle.R
 import com.example.wordle.domain.GameViewModel
 import com.example.wordle.ui.components.GameLayout
+import com.example.wordle.ui.components.Keyboard
 import com.example.wordle.ui.theme.WordleTheme
-
-
 
 
 @Composable
@@ -53,7 +39,7 @@ fun GameScreen(
     gameViewModel: GameViewModel = viewModel(),
 
     ) {
-    val gameUiState by gameViewModel.uiState.collectAsState()
+    val gameUiState by gameViewModel.squareState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Column(
@@ -67,17 +53,36 @@ fun GameScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Column (modifier = Modifier.weight(2f)) {
+
+        //игровое поле
+        Column(
+            modifier = Modifier.weight(2f),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = stringResource(R.string.app_name).uppercase(),
                 fontSize = 48.sp
             )
             GameLayout(gameViewModel)
+
+            //TODO добавить поле с подсказкой по цветам
         }
-        Box(modifier = Modifier.weight(1f)) {
-           // Keyboard(gameViewModel)
+
+
+
+
+        //клавиатура
+        Box(modifier = Modifier
+            .weight(1f)
+            .fillMaxSize()) {
+            Keyboard()
         }
     }
+
+
+
+
     /*
     if (gameUiState.isGameOver || gameUiState.isGameWin) {
         Success(
@@ -150,9 +155,9 @@ fun convertColors(color: Color): Color {
 fun GameScreenPreview() {
     WordleTheme {
         GameScreen()
-        Success(
-            true
-        ) {}
+        //Success(
+        // true
+        //) {}
 
     }
 }

@@ -5,34 +5,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-enum class squareState{
-    CorektLetter,
+enum class squareStatus {
+    CorrectLetter,
     UnCorrectLetter,
     NoLetter,
     NearLetter,
-    CurrentSquare
+    CurrentSquare,
+    NotCurrentSquare
 }
 
 
-class Square(
-    val numberOfSquare: Int,
-    char: Char = ' ',
-    var isVisible: Boolean = false,
-    var state: squareState = squareState.NoLetter
-) {
-    private val mutableChar = MutableStateFlow(char)
-    val char by mutableStateOf(char)
-
-    fun updateChar(newChar: Char) {
-        mutableChar.value = newChar
-    }
-}
-
-
+data class SquareState(
+    val letter: Char = ' ',
+    val status: squareStatus = squareStatus.NotCurrentSquare,
+    val isActive: Boolean = false
+)
 
 
 data class KeyboardButton(
-    val char: Char,
-    var color: Color = Color.DarkGray
+    val char: Char = ' ',
+    val status: squareStatus = squareStatus.NotCurrentSquare
 )

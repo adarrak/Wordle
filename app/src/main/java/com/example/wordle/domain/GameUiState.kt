@@ -1,48 +1,26 @@
 package com.example.wordle.domain
 
 import com.example.wordle.domain.usecase.KeyboardButton
-import com.example.wordle.domain.usecase.Square
+import com.example.wordle.domain.usecase.SquareState
 import kotlin.collections.MutableList
 
 
 // размер поля
-const val SIZE_OF_FIELD = 5
-val stringKeyboard: List<String> =
-    listOf(
-        "ЙЦУКЕНГШЩЗХЪ",
-        "ФЫВАПРОЛДЖЭ",
-        "ЯЧСМИТЬБЮ*"
-    )
+const val LENGTH_OF_WORD = 5
+const val NUMBER_OF_ATTEMPTS = 6
+const val NUMBER_OF_SQUARE = LENGTH_OF_WORD * NUMBER_OF_ATTEMPTS
+
+
+//раскладка клавиатуры
+val stringKeyboard: String = "ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ*"
+
 
 data class GameUiState(
-
-    val currentWord: String = " ",
-
-    //не угадал слово и закончились попытки
-    val isGameOver: Boolean = false,
-
-    //правильный ответ?
-    val isGameWin: Boolean = false,
-
-    // активные строка и столбец
-    val currentRow: Int = 0,
-    val currentColumn: Int = 0,
-
-
-    //клавиатура
-
-    val currentKeyboardButtons: MutableList<MutableList<KeyboardButton>> = MutableList(
-        stringKeyboard.size
-    ) { it ->
-        val string = stringKeyboard[it]
-        MutableList(string.length) { index ->
-            KeyboardButton(char = string[index])
-        }
+    val currentField: List<SquareState> = List(NUMBER_OF_SQUARE) {
+        SquareState()
     },
-    // текущее поле
-    val currentField: List<Square> = List(SIZE_OF_FIELD * SIZE_OF_FIELD) { number ->
-        Square(
-            number
-        )
+    val keyBoard: List<KeyboardButton> = List(stringKeyboard.length) {
+        KeyboardButton()
     }
 )
+

@@ -30,6 +30,49 @@ import com.example.wordle.R
 import com.example.wordle.domain.GameViewModel
 import com.example.wordle.ui.game.convertColors
 
+@Composable
+fun Keyboard() {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_small))
+    ) {
+
+
+/*
+
+    }
+        for (item in ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_extra_small))
+            ) {
+                item.forEach { it ->
+
+                    Box(
+                        modifier = Modifier
+                            .weight(if (it.char != '*') 1f else 2f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        KeyboardButton(
+                            text = it.char.toString(),
+                            onClick = if (it.char != '*') {
+                                { gameViewModel.writeSymbol(it.char) }
+                            } else {
+                                { gameViewModel.clearSymbol() }
+                            },
+                            color = convertColors(it.color)
+                        )
+                    }
+                }
+            }
+        }
+*/
+    }
+}
+
 /*
 
 @Composable
