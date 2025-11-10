@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,25 +60,28 @@ fun SquareView(
             ),
 
         ) {
-        Text(text = state.letter.toString())
+        Text(text = state.letter.uppercase())
     }
 }
 
 @Composable
 fun GameLayout(
     gameViewModel: GameViewModel,
+    currentField: List<SquareState>
 ) {
-    val gameUiState by gameViewModel.squareState.collectAsState()
+
     val extraSmallPadding = dimensionResource(R.dimen.padding_extra_small)
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(LENGTH_OF_WORD),
         modifier = Modifier.padding(extraSmallPadding),
         contentPadding = PaddingValues(extraSmallPadding)
     ) {
-        items(LENGTH_OF_WORD * NUMBER_OF_ATTEMPTS) { squareIndex ->
+
+        items(currentField.size) { index ->
             SquareView(
-                state = gameUiState[squareIndex],
-                onClick = { gameViewModel.selectSquare(squareIndex) }
+                state = currentField[index],
+                onClick = {gameViewModel.selectSquare(index)}
             )
         }
     }

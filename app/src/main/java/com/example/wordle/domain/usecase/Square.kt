@@ -1,12 +1,5 @@
 package com.example.wordle.domain.usecase
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-
 enum class squareStatus {
     CorrectLetter,
     UnCorrectLetter,
@@ -18,6 +11,7 @@ enum class squareStatus {
 
 
 data class SquareState(
+    val id: Int = 0,
     val letter: Char = ' ',
     val status: squareStatus = squareStatus.NotCurrentSquare,
     val isActive: Boolean = false
@@ -25,6 +19,7 @@ data class SquareState(
 
 
 data class KeyboardButton(
-    val char: Char = ' ',
+    val char: Char,
     val status: squareStatus = squareStatus.NotCurrentSquare
+
 )

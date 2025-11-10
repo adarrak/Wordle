@@ -2,6 +2,7 @@ package com.example.wordle.ui.game
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,7 @@ fun GameScreen(
     gameViewModel: GameViewModel = viewModel(),
 
     ) {
-    val gameUiState by gameViewModel.squareState.collectAsState()
+    val gameUiState by gameViewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Column(
@@ -56,7 +57,7 @@ fun GameScreen(
 
         //игровое поле
         Column(
-            modifier = Modifier.weight(2f),
+            modifier = Modifier.weight(5f),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -64,23 +65,26 @@ fun GameScreen(
                 text = stringResource(R.string.app_name).uppercase(),
                 fontSize = 48.sp
             )
-            GameLayout(gameViewModel)
-
+            GameLayout(gameViewModel, gameUiState.currentField)
+        }
             //TODO добавить поле с подсказкой по цветам
-        }
 
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize().background(Color.Cyan)
+        ) {}
 
+            //клавиатура
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .fillMaxSize()
+            ) {
+                Keyboard(gameViewModel, gameUiState.keyBoard)
+            }
 
-
-        //клавиатура
-        Box(modifier = Modifier
-            .weight(1f)
-            .fillMaxSize()) {
-            Keyboard()
-        }
     }
-
-
 
 
     /*

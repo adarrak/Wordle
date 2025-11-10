@@ -12,15 +12,20 @@ const val NUMBER_OF_SQUARE = LENGTH_OF_WORD * NUMBER_OF_ATTEMPTS
 
 
 //раскладка клавиатуры
-val stringKeyboard: String = "ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ*"
+val stringKeyboard: List<String> = listOf("ЙЦУКЕНГШЩЗХЪ","ФЫВАПРОЛДЖЭ","ЯЧСМИТЬБЮ*")
 
 
 data class GameUiState(
     val currentField: List<SquareState> = List(NUMBER_OF_SQUARE) {
         SquareState()
     },
-    val keyBoard: List<KeyboardButton> = List(stringKeyboard.length) {
-        KeyboardButton()
+    val keyBoard: List<List<KeyboardButton>> = List(stringKeyboard.size){row ->
+        List(stringKeyboard[row].length) { index ->
+            KeyboardButton(stringKeyboard[row][index])
+        }
     }
+
+
+
 )
 
