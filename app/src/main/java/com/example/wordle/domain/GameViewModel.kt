@@ -58,6 +58,7 @@ class GameViewModel : ViewModel() {
     fun gameRestart() {
         val newField = List(NUMBER_OF_SQUARE) { index ->
             SquareState(
+                id = index,
                 letter = ' ',
                 status = if (index == 0) squareStatus.CurrentSquare else squareStatus.NotCurrentSquare,
                 isActive = index < LENGTH_OF_WORD
