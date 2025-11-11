@@ -1,8 +1,9 @@
 package com.example.wordle.domain
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.example.wordle.domain.usecase.KeyboardButton
 import com.example.wordle.domain.usecase.SquareState
-import kotlin.collections.MutableList
 
 
 // размер поля
@@ -11,21 +12,18 @@ const val NUMBER_OF_ATTEMPTS = 6
 const val NUMBER_OF_SQUARE = LENGTH_OF_WORD * NUMBER_OF_ATTEMPTS
 
 
-//раскладка клавиатуры
-val stringKeyboard: List<String> = listOf("ЙЦУКЕНГШЩЗХЪ","ФЫВАПРОЛДЖЭ","ЯЧСМИТЬБЮ*")
+//раскладка клавиатуры "*" для стирания символа "/" для кнопки check
+val stringKeyboard: List<String> = listOf("ЙЦУКЕНГШЩЗХЪ", "ФЫВАПРОЛДЖЭ", "ЯЧСМИТЬБЮ*", "/")
 
 
 data class GameUiState(
-    val currentField: List<SquareState> = List(NUMBER_OF_SQUARE) {
-        SquareState()
+    val currentField: List<MutableState<SquareState>> = List(NUMBER_OF_SQUARE) {
+        mutableStateOf(SquareState())
     },
-    val keyBoard: List<List<KeyboardButton>> = List(stringKeyboard.size){row ->
+    val keyBoard: List<List<KeyboardButton>> = List(stringKeyboard.size) { row ->
         List(stringKeyboard[row].length) { index ->
             KeyboardButton(stringKeyboard[row][index])
         }
     }
-
-
-
 )
 

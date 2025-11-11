@@ -9,23 +9,21 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.wordle.R
 import com.example.wordle.domain.GameViewModel
 import com.example.wordle.domain.LENGTH_OF_WORD
-import com.example.wordle.domain.NUMBER_OF_ATTEMPTS
 import com.example.wordle.domain.usecase.SquareState
 import com.example.wordle.domain.usecase.squareStatus
 import com.example.wordle.ui.game.GameScreen
@@ -46,7 +44,7 @@ fun SquareView(
             .padding(extraSmallPadding)
             .aspectRatio(1f)
             .background(
-                color = InitColor(state.status),
+                color = initColor(state.status),
                 shape = RoundedCornerShape(smallPadding)
             )
             .border(
@@ -60,14 +58,14 @@ fun SquareView(
             ),
 
         ) {
-        Text(text = state.letter.uppercase())
+        Text(text = state.letter.uppercase(), fontSize = 36.sp)
     }
 }
 
 @Composable
 fun GameLayout(
     gameViewModel: GameViewModel,
-    currentField: List<SquareState>
+    currentField: List<MutableState<SquareState>>
 ) {
 
     val extraSmallPadding = dimensionResource(R.dimen.padding_extra_small)
@@ -80,7 +78,7 @@ fun GameLayout(
 
         items(currentField.size) { index ->
             SquareView(
-                state = currentField[index],
+                state = currentField[index].value,
                 onClick = {gameViewModel.selectSquare(index)}
             )
         }
@@ -89,11 +87,13 @@ fun GameLayout(
 
 
 @Composable
-fun InitColor(state: squareStatus): Color {
+fun initColor(state: squareStatus): Color {
 
     return when (state) {
         squareStatus.CurrentSquare -> MaterialTheme.colorScheme.outline
         squareStatus.NotCurrentSquare -> MaterialTheme.colorScheme.outlineVariant
+        squareStatus.CorrectLetter -> MaterialTheme.colorScheme.tertiary
+        squareStatus.NearLetter -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.surfaceDim
     }
 }

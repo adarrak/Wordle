@@ -8,4 +8,8 @@
 
     <string name="exit">Not this time</string>
     <string name="letsGo">Next word</string>
+    <string name="check">CHECK</string>
+
+
+
 </resources>

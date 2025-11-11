@@ -67,22 +67,23 @@ fun GameScreen(
             )
             GameLayout(gameViewModel, gameUiState.currentField)
         }
-            //TODO добавить поле с подсказкой по цветам
+        //TODO добавить поле с подсказкой по цветам
 
         Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxSize().background(Color.Cyan)
+                .fillMaxSize()
+                .background(Color.Cyan)
         ) {}
 
-            //клавиатура
-            Box(
-                modifier = Modifier
-                    .weight(2f)
-                    .fillMaxSize()
-            ) {
-                Keyboard(gameViewModel, gameUiState.keyBoard)
-            }
+        //клавиатура
+        Box(
+            modifier = Modifier
+                .weight(2f)
+                .fillMaxSize()
+        ) {
+            Keyboard(gameViewModel, gameUiState.keyBoard)
+        }
 
     }
 
