@@ -8,7 +8,8 @@
 
     <string name="exit">Not this time</string>
     <string name="letsGo">Next word</string>
-    <string name="check">CHECK</string>
+    <string name="check">ПРОВЕРИТЬ</string>
+    <string name="infoBox">Сложно? Попробуйте: %s, %s, %s</string>
 
 
 

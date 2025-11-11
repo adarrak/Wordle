@@ -3,6 +3,7 @@ package com.example.wordle.ui.game
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -21,11 +23,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.wordle.R
@@ -42,6 +45,7 @@ fun GameScreen(
     ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
+    val smallPadding = dimensionResource(R.dimen.padding_small)
 
     Column(
         modifier = Modifier
@@ -71,16 +75,40 @@ fun GameScreen(
 
         Box(
             modifier = Modifier
-                .weight(1f)
                 .fillMaxSize()
-                .background(Color.Cyan)
-        ) {}
+                .padding(mediumPadding),
+            contentAlignment = Alignment.Center
+
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        shape = RoundedCornerShape(smallPadding)
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        shape = RoundedCornerShape(smallPadding)
+                    )
+                    .padding(smallPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.infoBox, "qweqw", "qwsse", "qffwe"),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
 
         //клавиатура
         Box(
             modifier = Modifier
                 .weight(2f)
-                .fillMaxSize()
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
             Keyboard(gameViewModel, gameUiState.keyBoard)
         }
@@ -142,18 +170,6 @@ fun Success(
         }
     )
 }
-
-@Composable
-fun convertColors(color: Color): Color {
-    return when (color) {
-        Color.DarkGray -> MaterialTheme.colorScheme.outlineVariant
-        Color.Gray -> MaterialTheme.colorScheme.outline
-        Color.Green -> MaterialTheme.colorScheme.tertiary
-        Color.Yellow -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.surface
-    }
-}
-
 
 @Preview(showBackground = true, widthDp = 427, heightDp = 952)
 @Composable

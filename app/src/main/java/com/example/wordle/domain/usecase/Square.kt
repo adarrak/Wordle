@@ -3,7 +3,6 @@ package com.example.wordle.domain.usecase
 enum class squareStatus {
     CorrectLetter,
     UnCorrectLetter,
-    NoLetter,
     NearLetter,
     CurrentSquare,
     NotCurrentSquare
