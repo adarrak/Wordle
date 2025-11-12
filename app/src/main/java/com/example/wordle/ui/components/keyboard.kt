@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wordle.R
 import com.example.wordle.domain.GameViewModel
-import com.example.wordle.domain.usecase.KeyboardButton
+import com.example.wordle.data.KeyboardButton
 
 @Composable
 fun Keyboard(

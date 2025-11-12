@@ -2,8 +2,8 @@ package com.example.wordle.domain
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.wordle.domain.usecase.KeyboardButton
-import com.example.wordle.domain.usecase.SquareState
+import com.example.wordle.data.KeyboardButton
+import com.example.wordle.data.SquareState
 
 
 // размер поля

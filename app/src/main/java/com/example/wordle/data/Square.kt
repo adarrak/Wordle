@@ -1,4 +1,4 @@
-package com.example.wordle.domain.usecase
+package com.example.wordle.data
 
 enum class squareStatus {
     CorrectLetter,

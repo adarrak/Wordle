@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.sp
 import com.example.wordle.R
 import com.example.wordle.domain.GameViewModel
 import com.example.wordle.domain.LENGTH_OF_WORD
-import com.example.wordle.domain.usecase.SquareState
-import com.example.wordle.domain.usecase.squareStatus
+import com.example.wordle.data.SquareState
+import com.example.wordle.data.squareStatus
 import com.example.wordle.ui.game.GameScreen
 import com.example.wordle.ui.theme.WordleTheme
 

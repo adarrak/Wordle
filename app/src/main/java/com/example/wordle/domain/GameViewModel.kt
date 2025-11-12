@@ -3,8 +3,9 @@ package com.example.wordle.domain
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.wordle.domain.usecase.SquareState
-import com.example.wordle.domain.usecase.squareStatus
+import com.example.wordle.data.SquareState
+import com.example.wordle.data.squareStatus
+import com.example.wordle.domain.usecase.clickLogic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,10 +23,10 @@ class GameViewModel : ViewModel() {
     private var _currentIndex = 0
     private var _currentAttempt = 0
 
-
     init {
         gameRestart()
     }
+
 
     fun onClickKeyboardButton(symbol: Char) {
         Log.d(TAG, "вписана буква - $symbol")
@@ -121,10 +122,7 @@ class GameViewModel : ViewModel() {
             } else {
                 //TODO ответ не полный
             }
-
-
         }
-
         // обработчик нажатия клавиши
         when (symbol) {
             '*' -> clearSymbol()
@@ -133,21 +131,18 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    fun selectSquare(onClickNumber: Int) {
-        val currentFieldState = uiState.value.currentField
-        Log.d(TAG, "вписана буква - ")
 
-        if (onClickNumber != _currentIndex) {
-            // Снимаем выделение с текущего квадрата
-
-            currentFieldState[_currentIndex].value =
-                currentFieldState[_currentIndex].value.copy(status = squareStatus.NotCurrentSquare)
-            // Выделяем новый квадрат
-            currentFieldState[onClickNumber].value =
-                currentFieldState[onClickNumber].value.copy(status = squareStatus.CurrentSquare)
-            // Обновляем индекс
-            _currentIndex = onClickNumber
+    private val selectLogic = clickLogic(
+        _getCurrentIndex = {_currentIndex},
+        updateCurrentIndex = {_currentIndex = it},
+        getCurrentFieldState = {uiState.value.currentField},
+        updateSquareState = {index, newState ->
+            uiState.value.currentField[index].value = newState
         }
+    )
+
+    fun selectSquare(onClickNumber: Int) {
+       selectLogic.selectSquare(onClickNumber = onClickNumber)
     }
 
     fun gameRestart() {
