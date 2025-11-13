@@ -10,7 +10,6 @@ enum class squareStatus {
 
 
 data class SquareState(
-    val id: Int = 0,
     val letter: Char = ' ',
     val status: squareStatus = squareStatus.NotCurrentSquare,
     val isActive: Boolean = false
