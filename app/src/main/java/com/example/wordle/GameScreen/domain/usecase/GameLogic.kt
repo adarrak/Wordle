@@ -2,6 +2,7 @@ package com.example.wordle.GameScreen.domain.usecase
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.platform.LocalContext
 import com.example.wordle.GameScreen.data.KeyboardButton
 import com.example.wordle.GameScreen.data.SquareState
 import com.example.wordle.GameScreen.data.SquareStatus
