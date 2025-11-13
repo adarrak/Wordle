@@ -1,4 +1,4 @@
-package com.example.wordle.data
+package com.example.wordle.GameScreen.data
 
 val allWords: Set<String> =
     setOf(

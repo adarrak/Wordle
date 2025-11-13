@@ -12,5 +12,12 @@
     <string name="infoBox">Сложно? Попробуйте: %s, %s, %s</string>
 
 
+    <string name="main">Главная</string>
+    <string name="rules">Правила</string>
+    <string name="statistic">Статистика</string>
+    <string name="history">История</string>
+    <string name="profile">Профиль</string>
+
+
 
 </resources>

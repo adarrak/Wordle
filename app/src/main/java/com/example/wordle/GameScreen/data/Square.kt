@@ -1,6 +1,6 @@
-package com.example.wordle.data
+package com.example.wordle.GameScreen.data
 
-enum class squareStatus {
+enum class SquareStatus {
     CorrectLetter,
     UnCorrectLetter,
     NearLetter,
@@ -11,13 +11,13 @@ enum class squareStatus {
 
 data class SquareState(
     val letter: Char = ' ',
-    val status: squareStatus = squareStatus.NotCurrentSquare,
+    val status: SquareStatus = SquareStatus.NotCurrentSquare,
     val isActive: Boolean = false
 )
 
 
 data class KeyboardButton(
     val char: Char,
-    val status: squareStatus = squareStatus.NotCurrentSquare
+    val status: SquareStatus = SquareStatus.NotCurrentSquare
 
 )

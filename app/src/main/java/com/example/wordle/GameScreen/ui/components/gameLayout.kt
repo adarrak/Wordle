@@ -1,4 +1,4 @@
-package com.example.wordle.ui.components
+package com.example.wordle.GameScreen.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,12 +22,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wordle.R
-import com.example.wordle.domain.GameViewModel
-import com.example.wordle.domain.LENGTH_OF_WORD
-import com.example.wordle.data.SquareState
-import com.example.wordle.data.squareStatus
-import com.example.wordle.ui.game.GameScreen
-import com.example.wordle.ui.theme.WordleTheme
+import com.example.wordle.GameScreen.domain.GameViewModel
+import com.example.wordle.GameScreen.domain.LENGTH_OF_WORD
+import com.example.wordle.GameScreen.data.SquareState
+import com.example.wordle.GameScreen.data.SquareStatus
+import com.example.wordle.GameScreen.ui.game.GameScreen
+import com.example.wordle.GameScreen.ui.theme.WordleTheme
 
 
 @Composable
@@ -84,29 +84,17 @@ fun GameLayout(
         }
     }
 }
-
-
 @Composable
-fun initColor(state: squareStatus): Color {
+fun initColor(state: SquareStatus): Color {
 
     return when (state) {
-        squareStatus.CurrentSquare -> MaterialTheme.colorScheme.outline
-        squareStatus.NotCurrentSquare -> MaterialTheme.colorScheme.outlineVariant
-        squareStatus.CorrectLetter -> MaterialTheme.colorScheme.tertiary
-        squareStatus.UnCorrectLetter -> MaterialTheme.colorScheme.outlineVariant
-        squareStatus.NearLetter -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.surfaceDim
+        SquareStatus.CurrentSquare -> MaterialTheme.colorScheme.outline
+        SquareStatus.NotCurrentSquare -> MaterialTheme.colorScheme.outlineVariant
+        SquareStatus.CorrectLetter -> MaterialTheme.colorScheme.tertiary
+        SquareStatus.UnCorrectLetter -> MaterialTheme.colorScheme.outline
+        SquareStatus.NearLetter -> MaterialTheme.colorScheme.primary
     }
 }
-
-/*
-Color.DarkGray -> MaterialTheme.colorScheme.outlineVariant
-        Color.Gray -> MaterialTheme.colorScheme.outline
-        Color.Green -> MaterialTheme.colorScheme.tertiary
-        Color.Yellow -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.surface
- */
-
 @Preview(showBackground = true, widthDp = 427, heightDp = 952)
 @Composable
 fun GameScreenPreview() {

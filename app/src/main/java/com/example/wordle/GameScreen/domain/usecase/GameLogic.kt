@@ -1,14 +1,13 @@
-package com.example.wordle.domain.usecase
+package com.example.wordle.GameScreen.domain.usecase
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
-import com.example.wordle.data.KeyboardButton
-import com.example.wordle.data.SquareState
-import com.example.wordle.data.squareStatus
-import com.example.wordle.domain.GameViewModel
-import com.example.wordle.domain.LENGTH_OF_WORD
-import com.example.wordle.domain.NUMBER_OF_ATTEMPTS
-import com.example.wordle.domain.TAG
+import com.example.wordle.GameScreen.data.KeyboardButton
+import com.example.wordle.GameScreen.data.SquareState
+import com.example.wordle.GameScreen.data.SquareStatus
+import com.example.wordle.GameScreen.domain.LENGTH_OF_WORD
+import com.example.wordle.GameScreen.domain.NUMBER_OF_ATTEMPTS
+import com.example.wordle.GameScreen.domain.TAG
 
 class GameLogic(
     private val getCurrentFieldState: () -> List<MutableState<SquareState>>,
@@ -24,30 +23,26 @@ class GameLogic(
     private val _userAnswer: MutableList<Char> = MutableList(LENGTH_OF_WORD) { ' ' }
     private val _correctLetter: MutableSet<Char> = mutableSetOf()
     private val _nearLetter: MutableSet<Char> = mutableSetOf()
-
+    private val _unCorrectLetter: MutableSet<Char> = mutableSetOf()
     private val _currentWord
         get() = getCurrentWord()
-
-
     fun selectSquare(onClickNumber: Int) {
         Log.d(TAG, "вписана буква - ")
         if (onClickNumber != _currentIndex) {
             // Снимаем выделение с текущего квадрата
             updateSquareState(
                 _currentIndex,
-                currentFieldState[_currentIndex].value.copy(status = squareStatus.NotCurrentSquare)
+                currentFieldState[_currentIndex].value.copy(status = SquareStatus.NotCurrentSquare)
             )
             // Выделяем новый квадрат
             updateSquareState(
                 onClickNumber,
-                currentFieldState[onClickNumber].value.copy(status = squareStatus.CurrentSquare)
+                currentFieldState[onClickNumber].value.copy(status = SquareStatus.CurrentSquare)
             )
             // Обновляем индекс
             _currentIndex = onClickNumber
         }
     }
-
-
     // обработчик нажатия клавиши
     fun onClickKeyboardButton(symbol: Char) {
         when (symbol) {
@@ -56,7 +51,6 @@ class GameLogic(
             else -> writeSymbol(symbol)
         }
     }
-
 
     //записываем нажатую букву в текущий квадрат
     private fun writeSymbol(symbol: Char) {
@@ -96,6 +90,7 @@ class GameLogic(
         }
     }
 
+    //проверка введенного ответа
     private fun checkAnswer() {
         val firstIndex = LENGTH_OF_WORD * _currentAttempt
         val lastIndex = LENGTH_OF_WORD * _currentAttempt + LENGTH_OF_WORD - 1
@@ -112,10 +107,13 @@ class GameLogic(
 
             // проверка есть ли буквы на своих местах
             for (i in 0 until _userAnswer.size) {
+                //если буквы нет в ответе добавить в некорректные
+                if (_userAnswer[i] !in _currentWord) _unCorrectLetter.add(_userAnswer[i])
                 if (_userAnswer[i] == _currentWord[i]) {
+                    //если буква на правильном месте добавить в некорректные
                     _correctLetter.add(_currentWord[i])
                     currentFieldState[i + firstIndex].value =
-                        currentFieldState[i + firstIndex].value.copy(status = squareStatus.CorrectLetter)
+                        currentFieldState[i + firstIndex].value.copy(status = SquareStatus.CorrectLetter)
                     _userAnswer[i] = ' '
                     checkMask[i] = ' '
                 }
@@ -134,7 +132,7 @@ class GameLogic(
                     _nearLetter.add(_userAnswer[i])
                     countMap[_userAnswer[i]] = (countMap[_userAnswer[i]] ?: 0) - 1
                     currentFieldState[i + firstIndex].value =
-                        currentFieldState[i + firstIndex].value.copy(status = squareStatus.NearLetter)
+                        currentFieldState[i + firstIndex].value.copy(status = SquareStatus.NearLetter)
                 }
             }
             _userAnswer.fill(' ')
@@ -160,7 +158,9 @@ class GameLogic(
         val newKeyboard: List<List<KeyboardButton>> = currentKeyboard.map { row ->
             row.map { item ->
                 when (item.char) {
-                    in _correctLetter -> item.copy(status = squareStatus.CorrectLetter)
+                    in _correctLetter -> item.copy(status = SquareStatus.CorrectLetter)
+                    in _nearLetter -> item.copy(status = SquareStatus.NearLetter)
+                    in _unCorrectLetter -> item.copy(status = SquareStatus.UnCorrectLetter)
                     else -> item
                 }
             }
@@ -174,5 +174,6 @@ class GameLogic(
         _currentAttempt = 0
         _nearLetter.clear()
         _correctLetter.clear()
+        _unCorrectLetter.clear()
     }
 }

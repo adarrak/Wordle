@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.wordle.ui.game.GameScreen
-import com.example.wordle.ui.theme.WordleTheme
+import com.example.wordle.GameScreen.ui.game.GameScreen
+import com.example.wordle.GameScreen.ui.theme.WordleTheme
+import com.example.wordle.MainScreen.ui.MainScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.surface
                 ) {
-                    GameScreen()
+                    MainScreen()
                 }
             }
         }

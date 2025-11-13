@@ -1,4 +1,4 @@
-package com.example.wordle.ui.theme
+package com.example.wordle.MainScreen.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

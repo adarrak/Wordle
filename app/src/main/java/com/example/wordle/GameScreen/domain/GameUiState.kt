@@ -1,9 +1,9 @@
-package com.example.wordle.domain
+package com.example.wordle.GameScreen.domain
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.wordle.data.KeyboardButton
-import com.example.wordle.data.SquareState
+import com.example.wordle.GameScreen.data.KeyboardButton
+import com.example.wordle.GameScreen.data.SquareState
 
 
 // размер поля

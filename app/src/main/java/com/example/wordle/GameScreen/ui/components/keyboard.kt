@@ -1,4 +1,4 @@
-package com.example.wordle.ui.components
+package com.example.wordle.GameScreen.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,8 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wordle.R
-import com.example.wordle.domain.GameViewModel
-import com.example.wordle.data.KeyboardButton
+import com.example.wordle.GameScreen.domain.GameViewModel
+import com.example.wordle.GameScreen.data.KeyboardButton
 
 @Composable
 fun Keyboard(
