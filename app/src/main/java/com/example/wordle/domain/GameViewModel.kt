@@ -16,12 +16,8 @@ class GameViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
+    //TODO: переделать получение нового слова
     private val _currentWord = "ШУМОК"
-
-
-    init {
-        gameRestart()
-    }
 
 
     private val gameLogic = GameLogic(
@@ -29,8 +25,16 @@ class GameViewModel : ViewModel() {
         updateSquareState = { index, newState ->
             uiState.value.currentField[index].value = newState
         },
-        getCurrentWord = { _currentWord }
+        getCurrentWord = { _currentWord },
+        getCurrentKeyboard = { uiState.value.keyBoard },
+        updateCurrentKeyboard = {newKeyboard ->
+            uiState.value.copy(keyBoard = newKeyboard)
+        }
     )
+
+    init {
+        gameRestart()
+    }
 
     fun onClickKeyboardButton(symbol: Char) {
         gameLogic.onClickKeyboardButton(symbol)
@@ -51,6 +55,6 @@ class GameViewModel : ViewModel() {
                 isActive = index < LENGTH_OF_WORD
             )
         }
-        // gameLogic.resetVariable()
+        gameLogic.resetVariable()
     }
 }

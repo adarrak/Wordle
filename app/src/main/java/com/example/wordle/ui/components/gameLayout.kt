@@ -93,6 +93,7 @@ fun initColor(state: squareStatus): Color {
         squareStatus.CurrentSquare -> MaterialTheme.colorScheme.outline
         squareStatus.NotCurrentSquare -> MaterialTheme.colorScheme.outlineVariant
         squareStatus.CorrectLetter -> MaterialTheme.colorScheme.tertiary
+        squareStatus.UnCorrectLetter -> MaterialTheme.colorScheme.outlineVariant
         squareStatus.NearLetter -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.surfaceDim
     }
