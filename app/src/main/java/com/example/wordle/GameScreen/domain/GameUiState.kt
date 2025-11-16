@@ -8,7 +8,7 @@ import com.example.wordle.GameScreen.data.SquareState
 
 // размер поля
 const val LENGTH_OF_WORD = 5
-const val NUMBER_OF_ATTEMPTS = 6
+const val NUMBER_OF_ATTEMPTS = 5
 const val NUMBER_OF_SQUARE = LENGTH_OF_WORD * NUMBER_OF_ATTEMPTS
 
 
