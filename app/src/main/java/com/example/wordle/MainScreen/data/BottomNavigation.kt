@@ -16,7 +16,6 @@ val bottomImageList: List<BottomImage> = listOf(
     BottomImage(R.string.statistic, Icons.Filled.BarChart),
     BottomImage(R.string.history, Icons.Filled.History),
     BottomImage(R.string.profile, Icons.Filled.AccountCircle),
-
 )
 
 

@@ -17,6 +17,10 @@
     <string name="statistic">Статистика</string>
     <string name="history">История</string>
     <string name="profile">Профиль</string>
+    <string name="first_rules_screen_title">Цвета букв - это подсказки, показывающие, насколько вы  близки к правильному слову </string>
+    <string name="first_rules_screen_correct">верно</string>
+    <string name="first_rules_screen_near">есть в слове, но на другом месте</string>
+    <string name="first_rules_screen_un_correct">нет в загаданном слове</string>
 
 
 
