@@ -18,6 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -36,6 +40,7 @@ fun MainScreen() {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val extraSmallPadding = dimensionResource(R.dimen.padding_extra_small)
+    var bottomIndex by remember { mutableStateOf(0) }
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -61,10 +66,10 @@ fun MainScreen() {
                 .padding(vertical = mediumPadding)
 
         ) {
-            val i = 1
-            when (i) {
+
+            when (bottomIndex) {
                 0 -> SelectGame()
-                1 -> ListOfRules()
+                1 -> ListOfRules(startIndex = 0)
             }
 
         }
@@ -81,7 +86,8 @@ fun MainScreen() {
                             .weight(1f)
                             .padding(extraSmallPadding)
                             .clickable(
-                                onClick = { Log.d("TAG", "MainScreen: $title") }
+                                onClick = { bottomIndex = item.id
+                                    Log.d("TAG", "MainScreen: $title") }
                             ),
                         contentAlignment = Alignment.Center,
 

@@ -18,7 +18,7 @@ class GameViewModel : ViewModel() {
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
     //TODO: переделать получение нового слова
-    private val _currentWord = "ШУМОК"
+    private val _currentWord = "АРБУЗ"
 
 
     private val gameLogic = GameLogic(

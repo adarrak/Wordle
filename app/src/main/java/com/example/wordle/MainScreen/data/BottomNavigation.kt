@@ -11,16 +11,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.wordle.R
 
 val bottomImageList: List<BottomImage> = listOf(
-    BottomImage(R.string.main, Icons.Filled.Home),
-    BottomImage(R.string.rules, Icons.AutoMirrored.Filled.HelpOutline),
-    BottomImage(R.string.statistic, Icons.Filled.BarChart),
-    BottomImage(R.string.history, Icons.Filled.History),
-    BottomImage(R.string.profile, Icons.Filled.AccountCircle),
+    BottomImage(id=0, title = R.string.main, Icons.Filled.Home),
+    BottomImage(id=1, title = R.string.rules, Icons.AutoMirrored.Filled.HelpOutline),
+    BottomImage(id=2, title = R.string.statistic, Icons.Filled.BarChart),
+    BottomImage(id=3, title = R.string.history, Icons.Filled.History),
+    BottomImage(id=4, title = R.string.profile, Icons.Filled.AccountCircle),
 )
 
 
 
 data class BottomImage(
+    val id: Int,
     @StringRes
     val title: Int,
     val icon: ImageVector
