@@ -52,7 +52,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation("androidx.compose.material:material-icons-extended")
-
+    implementation("androidx.navigation:navigation-compose")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
     implementation(libs.androidx.ui.graphics)

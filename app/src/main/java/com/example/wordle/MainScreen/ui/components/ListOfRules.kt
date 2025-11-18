@@ -1,7 +1,8 @@
 package com.example.wordle.MainScreen.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -28,13 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
@@ -46,8 +44,8 @@ import androidx.compose.ui.unit.IntOffset
 import com.example.wordle.GameScreen.ui.components.SquareView
 import com.example.wordle.GameScreen.ui.theme.WordleTheme
 import com.example.wordle.MainScreen.data.hintMap
-import com.example.wordle.R
 import com.example.wordle.MainScreen.data.word
+import com.example.wordle.R
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -57,7 +55,8 @@ import kotlin.math.roundToInt
 fun ListOfRules(startIndex: Int) {
     var currentIndex by remember { mutableIntStateOf(startIndex) }
     val offsetX = remember { Animatable(0f) }
-    val items: List<@Composable () -> Unit> = listOf({ First() }, { Second() })
+    val items: List<@Composable () -> Unit> =
+        listOf({ First() }, { Second() }, { Third() }, { Fourth() }, { Fifth() })
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,10 +66,11 @@ fun ListOfRules(startIndex: Int) {
                         onDragEnd = {
                             val threshold = size.width / 4
                             if (abs(offsetX.value) > threshold) {
-                                currentIndex = when {
-                                    offsetX.value > 0 -> (currentIndex - 1).coerceAtLeast(0)
-                                    else -> (currentIndex + 1).coerceAtMost(items.lastIndex)
-                                }
+                                currentIndex =
+                                    (currentIndex + if (offsetX.value < 0) 1 else -1).coerceIn(
+                                        0,
+                                        items.lastIndex
+                                    )
                             }
                             launch {
                                 offsetX.animateTo(0f) // Возврат смещения к нулю
@@ -106,11 +106,7 @@ fun ListOfRules(startIndex: Int) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-            when (currentIndex) {
-                0 -> First()
-                1 -> Second()
-                else -> " "
-            }
+            items[currentIndex]()
         }
         // точки снизу
 
@@ -120,16 +116,15 @@ fun ListOfRules(startIndex: Int) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             for (i in 0 until items.size) {
+                val size by animateDpAsState(if (i == currentIndex) dimensionResource(R.dimen.padding_medium) else dimensionResource(R.dimen.padding_small))
+                val color by animateColorAsState(if (i == currentIndex) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceDim)
+
                 Box(
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.padding_small))
-                        .size(
-                            if (i == currentIndex) dimensionResource(R.dimen.padding_medium) else dimensionResource(
-                                R.dimen.padding_small
-                            )
-                        )
+                        .size(size)
                         .clip(CircleShape)
-                        .background(color = MaterialTheme.colorScheme.surfaceDim),
+                        .background(color)
                 )
             }
         }
@@ -201,8 +196,7 @@ fun Second() {
             painter = painterResource(R.drawable.field),
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth(0.7f)
-                ,
+                .fillMaxWidth(0.7f),
             contentScale = ContentScale.Fit
         )
         Spacer(Modifier.size(dimensionResource(R.dimen.padding_medium)))
@@ -212,9 +206,29 @@ fun Second() {
             painter = painterResource(R.drawable.keyboard),
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth(0.7f)
-                ,
+                .fillMaxWidth(0.7f),
             contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+fun Third() {
+    Fifth()
+}
+
+
+@Composable
+fun Fourth() {
+    Fifth()
+}
+
+@Composable
+fun Fifth() {
+    Box(Modifier.padding(dimensionResource(R.dimen.padding_medium))) {
+        Text(
+            text = stringResource(R.string.soon),
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -224,6 +238,6 @@ fun Second() {
 @Composable
 fun GameScreenPreview() {
     WordleTheme {
-        ListOfRules(1)
+        ListOfRules(0)
     }
 }

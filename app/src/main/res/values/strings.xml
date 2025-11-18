@@ -14,18 +14,19 @@
 
     <string name="main">Главная</string>
     <string name="rules">Правила</string>
-    <string name="statistic">Статистика</string>
+    <string name="statistic">Инфо</string>
     <string name="history">История</string>
     <string name="profile">Профиль</string>
     <string name="first_rules_screen_title">Цвета букв - это подсказки, показывающие, насколько вы  близки к правильному слову </string>
     <string name="first_rules_screen_correct">верно</string>
     <string name="first_rules_screen_near">есть в слове, но на другом месте</string>
     <string name="first_rules_screen_un_correct">нет в загаданном слове</string>
-    <string name="second_rules_screen_title">У вас есть 6 попыток, чтобы угадать слово</string>
+    <string name="second_rules_screen_title">У вас есть 5 попыток, чтобы угадать слово</string>
     <string name="second_rules_screen_text">Введите слово с помощью клавиатуры на экране и нажмите \"ПРОВЕРИТЬ\"</string>
 
     <string name="third_rules_screen_title">В ответе есть повторные буквы?</string>
     <string name="third_rules_screen_text">Только одна буква будет выделена цветом, если во введенном слове эта буква встречается один раз</string>
+    <string name="soon">Скоро! Совсем скоро)</string>
 
 
 </resources>
