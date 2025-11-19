@@ -89,8 +89,8 @@ fun MainScreen() {
                 bottomImageList.forEach { item ->
                     val title = stringResource(item.title)
                     val color = when (item.id) {
-                        bottomIndex -> MaterialTheme.colorScheme.primary
-                        else -> MaterialTheme.colorScheme.surfaceDim
+                        bottomIndex -> MaterialTheme.colorScheme.tertiary
+                        else -> MaterialTheme.colorScheme.outline
                     }
                     Box(
                         modifier = Modifier

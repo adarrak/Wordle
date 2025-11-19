@@ -22,7 +22,6 @@ val bottomImageList: List<BottomImage> = listOf(
 
 data class BottomImage(
     val id: Int,
-    @StringRes
     val title: Int,
     val icon: ImageVector
 )

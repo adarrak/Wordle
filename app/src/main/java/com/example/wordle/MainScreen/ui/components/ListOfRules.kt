@@ -117,7 +117,7 @@ fun ListOfRules(startIndex: Int) {
         ) {
             for (i in 0 until items.size) {
                 val size by animateDpAsState(if (i == currentIndex) dimensionResource(R.dimen.padding_medium) else dimensionResource(R.dimen.padding_small))
-                val color by animateColorAsState(if (i == currentIndex) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceDim)
+                val color by animateColorAsState(if (i == currentIndex) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline)
 
                 Box(
                     modifier = Modifier
